@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_command_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:36:00 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/03 07:58:30 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/05 18:32:10 by scarlos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,31 @@ void	initialize_state(t_parse *state, const char *cmd)
 	ft_memset(state->quote_types, 0, sizeof(char) * max_tokens);
 }
 
+static int	redir_isnot_command(t_parse *state, t_shell *shell)
+{
+	if ((ft_strcmp(state->args[0], "\">>\"") == 0) || ft_strcmp(state->args[0], "\'>>\'") == 0)
+	{
+		print_error_command(">>", "Command not found",127, shell);
+		return (1);
+	}
+	if ((ft_strcmp(state->args[0], "\">\"") == 0) || ft_strcmp(state->args[0], "\'>\'") == 0)
+	{
+		print_error_command(">", "Command not found",127, shell);
+		return (1);
+	}
+	if ((ft_strcmp(state->args[0], "\"<<\"") == 0) || ft_strcmp(state->args[0], "\'>>\'") == 0)
+	{
+		print_error_command("<<", "Command not found",127, shell);
+		return (1);
+	}
+	if ((ft_strcmp(state->args[0], "\"<\"") == 0) || ft_strcmp(state->args[0], "\'>\'") == 0)
+	{
+		print_error_command("<", "Command not found",127, shell);
+		return (1);
+	}
+	return 0;
+}
+
 int	check_errors(t_parse *state, t_shell *shell, int last_was_operator)
 {
 	if (state->in_quotes)
@@ -59,6 +84,8 @@ int	check_errors(t_parse *state, t_shell *shell, int last_was_operator)
 		print_error_simple("syntax error: unclosed quotes", 2, shell);
 		return (0);
 	}
+	if (redir_isnot_command(state, shell))
+		return 0;
 	if (last_was_operator)
 	{
 		print_error_token("newline", 2, shell);

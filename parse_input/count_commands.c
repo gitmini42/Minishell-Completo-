@@ -6,7 +6,7 @@
 /*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:57:31 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/05 14:36:48 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/05 19:00:46 by scarlos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,8 @@ static void	process_pipe_operator(t_count_context *ctx, t_indices *idx,
 	int *command_index)
 {
 	handle_pipe_validation(ctx, idx);
-	if (ctx->shell->exit_status == 2)
-		return ;
+	// if (ctx->shell->exit_status == 2)
+	// 	return ;
 	handle_pipe(ctx->data, command_index, ctx->shell);
 	idx->j = 0;
 	idx->i++;
@@ -62,8 +62,6 @@ static void	count_commands_internal(t_count_context *ctx)
 			idx.j++;
 			idx.i++;
 		}
-		// if (ctx->shell->exit_status == 2)
-		// 	return ;
 	}
 	ctx->data->num_commands = command_index + 1;
 	validate_final_state(ctx->data, ctx->shell);
