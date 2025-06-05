@@ -6,7 +6,7 @@
 /*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:02:00 by pedro             #+#    #+#             */
-/*   Updated: 2025/06/05 14:34:34 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/05 15:21:04 by scarlos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,12 +95,8 @@ int	handle_output_redirect(t_output_params *params, t_shell *shell)
 	if (!shell->is_counting && params->base.data->out_redirs
 		&& params->base.data->num_out_redirs)
 	{
-		(open_output_file(params->base.args, params->base.indices,
-				params->token, shell));
-		// {
-		// 	params->base.indices->i += 2;
-		// 	return (-1);
-		// }
+		open_output_file(params->base.args, params->base.indices,
+				params->token, shell);
 		if (add_output_redirection(params) == -1)
 		{
 			shell->exit_status = 1;
