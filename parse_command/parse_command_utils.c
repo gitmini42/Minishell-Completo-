@@ -6,7 +6,7 @@
 /*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:36:00 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/05 18:32:10 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/06 11:25:55 by scarlos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ void	initialize_state(t_parse *state, const char *cmd)
 	ft_memset(state->args, 0, sizeof(char *) * max_tokens);
 	ft_memset(state->quote_types, 0, sizeof(char) * max_tokens);
 }
-
 static int	redir_isnot_command(t_parse *state, t_shell *shell)
 {
 	if ((ft_strcmp(state->args[0], "\">>\"") == 0) || ft_strcmp(state->args[0], "\'>>\'") == 0)
@@ -76,7 +75,6 @@ static int	redir_isnot_command(t_parse *state, t_shell *shell)
 	}
 	return 0;
 }
-
 int	check_errors(t_parse *state, t_shell *shell, int last_was_operator)
 {
 	if (state->in_quotes)
