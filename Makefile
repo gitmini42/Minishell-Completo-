@@ -6,8 +6,7 @@ RM = rm -rf
 OBJDIR = objs
 
 SRCS =  ./builtins/check_execute_builtins.c \
-		./builtins/builtins_utils.c \
-		./builtins/builtins_utils2.c  \
+		./builtins/builtins_utils.c ./builtins/builtins_utils2.c  \
 		./builtins/echo.c \
 		./builtins/pwd.c \
 		./builtins/cd.c \

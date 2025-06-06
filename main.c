@@ -6,7 +6,7 @@
 /*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 12:05:30 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/05 18:33:58 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/06 11:57:08 by scarlos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,77 +74,77 @@ int	process_input(char *input, t_shell *shell)
 	return (2);
 }
 
-// int	main(int argc, char *argv[], char *envp[])
-// {
-// 	t_shell	*shell;
-// 	char	*input;
-
-// 	(void)argc;
-// 	(void)argv;
-// 	shell = get_shell();
-// 	init_shell(shell, envp);
-// 	rl_catch_signals = 0;
-// 	while (1)
-// 	{
-// 		input = readline("minishell> ");
-// 		if (process_input(input, shell) == 0)
-// 		{
-// 			ft_putstr_fd("exit\n", STDOUT_FILENO);
-// 			break ;
-// 		}
-// 		if (input && input[0] != '\0' && process_input(input, shell) == 2)
-// 		{
-// 			handle_command(input, shell);
-// 			if (input && input[0] != '\0')
-// 				free(input);
-// 		}
-// 	}
-// 	finalize_shell(shell);
-// 	return (shell->exit_status);
-// }
-
 int	main(int argc, char *argv[], char *envp[])
 {
 	t_shell	*shell;
 	char	*input;
-	char	*line;
-	int		result;
 
 	(void)argc;
 	(void)argv;
 	shell = get_shell();
 	init_shell(shell, envp);
 	rl_catch_signals = 0;
-	set_signals_interactive();
 	while (1)
 	{
-		if (isatty(fileno(stdin)))
-			input = readline("minishell> ");
-		else
+		input = readline("minishell> ");
+		if (process_input(input, shell) == 0)
 		{
-			line = get_next_line(fileno(stdin));
-			if (!line)
-			{
-				input = NULL;
-			}
-			else
-			{
-				input = ft_strtrim(line, "\n");
-				free(line);
-			}
-		}
-		result = process_input(input, shell);
-		if (result == 0)
-		{
+			ft_putstr_fd("exit\n", STDOUT_FILENO);
 			break ;
 		}
-		if (input && input[0] != '\0' && result == 2)
+		if (input && input[0] != '\0' && process_input(input, shell) == 2)
 		{
 			handle_command(input, shell);
+			if (input && input[0] != '\0')
+				free(input);
 		}
-		if (input)
-			free(input);
 	}
 	finalize_shell(shell);
 	return (shell->exit_status);
 }
+
+// int	main(int argc, char *argv[], char *envp[])
+// {
+// 	t_shell	*shell;
+// 	char	*input;
+// 	char	*line;
+// 	int		result;
+
+// 	(void)argc;
+// 	(void)argv;
+// 	shell = get_shell();
+// 	init_shell(shell, envp);
+// 	rl_catch_signals = 0;
+// 	set_signals_interactive();
+// 	while (1)
+// 	{
+// 		if (isatty(fileno(stdin)))
+// 			input = readline("minishell> ");
+// 		else
+// 		{
+// 			line = get_next_line(fileno(stdin));
+// 			if (!line)
+// 			{
+// 				input = NULL;
+// 			}
+// 			else
+// 			{
+// 				input = ft_strtrim(line, "\n");
+// 				free(line);
+// 			}
+// 		}
+// 		result = process_input(input, shell);
+// 		if (result == 0)
+// 		{
+// 			break ;
+// 		}
+// 		if (input && input[0] != '\0' && result == 2)
+// 		{
+// 			handle_command(input, shell);
+// 		}
+// 		if (input)
+// 			free(input);
+// 	}
+// 	finalize_shell(shell);
+// 	return (shell->exit_status);
+// }
