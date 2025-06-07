@@ -3,23 +3,40 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:08:13 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 11:41:03 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:36:19 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	handle_builtin_invalid_option(char *arg, char *cmd_name, char *usage)
+int	handle_builtin_invalid_option(char *arg, char *cmd_name, int is_env)
 {
-	ft_putstr_fd("minishell: ", 2);
+	char	invalid_char;
+
+	if (!is_env)
+		ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(cmd_name, 2);
-	ft_putstr_fd(": -", 2);
-	ft_putchar_fd(arg[1], 2);
-	ft_putstr_fd(": invalid option\n", 2);
-	ft_putstr_fd(usage, 2);
+	if (arg[1])
+		invalid_char = arg[1];
+	else
+		invalid_char = '?';
+	if (is_env)
+	{
+		ft_putstr_fd(": invalid option -- '", 2);
+		ft_putchar_fd(invalid_char, 2);
+		ft_putstr_fd("'\n", 2);
+	}
+	else
+	{
+		ft_putstr_fd(": -", 2);
+		ft_putchar_fd(invalid_char, 2);
+		ft_putstr_fd(": invalid option\n", 2);
+	}
+	if (is_env)
+		return (125);
 	return (2);
 }
 
@@ -104,8 +121,7 @@ int	ft_unset(char **args, t_var **vars, char ***envp)
 			continue ;
 		}
 		if (args[i][0] == '-' && args[i][1] != '\0')
-			return (handle_builtin_invalid_option(args[i], "unset",
-					"unset: usage: unset [name ...]\n"));
+			return (handle_builtin_invalid_option(args[i], "unset", 0));
 		if (!is_valid_var_name(args[i]))
 		{
 			i++;

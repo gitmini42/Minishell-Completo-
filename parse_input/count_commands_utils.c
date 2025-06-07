@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   count_commands_utils.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:57:46 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/06 11:54:51 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:34:16 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,19 @@ void	handle_pipe_validation(t_count_context *ctx, t_indices *idx)
 		{
 			print_error_simple("syntax error: no command before pipe", 2,
 				ctx->shell);
-			idx->i++;
 			return ;
 		}
 	}
 	if (idx->i + 1 >= (size_t)ctx->count || ctx->args[idx->i + 1] == NULL)
 	{
 		print_error_simple("syntax error near token", 2, ctx->shell);
-		idx->i++;
 		return ;
 	}
-	if (idx->i + 1 < (size_t)ctx->count && is_operator(ctx->args[idx->i + 1])
-		&& ft_strcmp(ctx->args[idx->i + 1], "|") == 0)
+	if (ft_strcmp(ctx->args[idx->i + 1], "|") == 0
+		|| ft_strcmp(ctx->args[idx->i + 1], "||") == 0)
 	{
-		print_error_simple("syntax error near unexpected token", 2,
-			ctx->shell);
+		print_error_simple("syntax error near unexpected token `|'",
+			2, ctx->shell);
 		idx->i += 1;
 		return ;
 	}
@@ -45,7 +43,7 @@ void	process_heredoc_operator(t_count_context *ctx, t_indices *idx)
 	if (idx->i + 1 >= (size_t)ctx->count || ctx->args[idx->i + 1] == NULL)
 	{
 		print_error_simple("syntax error near token", 2, ctx->shell);
-		idx->i++;
+		idx->i += 1;
 		return ;
 	}
 	idx->i += 2;
@@ -58,8 +56,8 @@ void	process_redirect_operator(t_count_context *ctx, t_indices *idx,
 
 	if (idx->i + 1 >= (size_t)ctx->count || ctx->args[idx->i + 1] == NULL)
 	{
-		print_error_simple("syntax error near token", 2, ctx->shell);
-		idx->i++;
+		print_error_simple(" syntax error near token", 2, ctx->shell);
+		idx->i += 1;
 		return ;
 	}
 	ctx->shell->is_counting = 1;

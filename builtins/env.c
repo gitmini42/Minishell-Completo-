@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:07:07 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 11:39:06 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:50:58 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,16 +57,18 @@ static void	print_env(char **env)
 void	ft_env(char **args, t_shell *shell)
 {
 	char	**copy;
-	int		count;
 
 	if (args && args[1])
 	{
-		print_error_command("env", "No such file or directory", 127, shell);
+		if (args[1][0] == '-')
+		{
+			shell->exit_status
+				= handle_builtin_invalid_option(args[1], "env", 1);
+			return ;
+		}
+		print_error_command2("env", args[1], "No such file or directory", 127);
 		return ;
 	}
-	count = 0;
-	while (shell->envp[count])
-		count++;
 	copy = copy_envp(shell->envp);
 	if (!copy)
 	{

@@ -85,16 +85,13 @@ t_command_data	*prepare_command_data(char **filtered_args, t_shell *shell)
 		return (NULL);
 	ft_memset(data, 0, sizeof(t_command_data));
 	parse_input(filtered_args, count, data, shell);
+	if (data->heredoc_fd == 0)
+		data->heredoc_fd = -1;
 	return (data);
 }
 
 void	execute_command_pipeline(t_command_data *data, t_shell *shell)
 {
-	/*if (shell->exit_status == 2)
-	{
-		cleanup_command_data(data);
-		return ;
-	}*/
 	if (shell->exit_status != 2 && validate_command(data->commands, shell) == 0)
 	{
 		cleanup_command_data(data);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_input_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 07:29:00 by pviegas-          #+#    #+#             */
-/*   Updated: 2025/06/05 14:36:43 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:34:59 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,19 @@
 
 int	is_operator(const char *token)
 {
-	if (token == NULL)
+	if (token == NULL || *token == '\0')
 		return (0);
-	if (ft_strcmp(token, "|") == 0)
+	if (ft_strcmp(token, "|") == 0
+		|| ft_strcmp(token, "<") == 0
+		|| ft_strcmp(token, ">") == 0
+		|| ft_strcmp(token, ">>") == 0
+		|| ft_strcmp(token, "<<") == 0)
 		return (1);
-	if (ft_strcmp(token, "<") == 0)
-		return (1);
-	if (ft_strcmp(token, ">") == 0)
-		return (1);
-	if (ft_strcmp(token, ">>") == 0)
-		return (1);
-	if (ft_strcmp(token, "<<") == 0)
+	if (ft_strcmp(token, "||") == 0
+		|| ft_strcmp(token, "|>") == 0
+		|| ft_strcmp(token, ">|") == 0
+		|| ft_strcmp(token, "<<|") == 0
+		|| ft_strcmp(token, ">>|") == 0)
 		return (1);
 	return (0);
 }

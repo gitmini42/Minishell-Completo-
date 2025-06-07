@@ -6,7 +6,8 @@ RM = rm -rf
 OBJDIR = objs
 
 SRCS =  ./builtins/check_execute_builtins.c \
-		./builtins/builtins_utils.c ./builtins/builtins_utils2.c  \
+		./builtins/builtins_utils.c \
+		./builtins/builtins_utils2.c  \
 		./builtins/echo.c \
 		./builtins/pwd.c \
 		./builtins/cd.c \
@@ -25,6 +26,7 @@ SRCS =  ./builtins/check_execute_builtins.c \
 		./expand_vars/mixed_quotes.c \
 		./expand_vars/parse_quote_segments.c \
 		./expand_vars/expand_token.c \
+		./expand_vars/word_splitting.c \
 		./parse_command/parse_command_utils.c \
 		./parse_command/parse_command.c \
 		./parse_command/process_token.c \

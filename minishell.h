@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 18:31:59 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 12:16:24 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/07 00:34:59 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <stdbool.h>
 # include <stdio.h>
 # include <signal.h>
+# include <termios.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include "libft/libft.h"
@@ -61,6 +62,7 @@ typedef struct s_command_data
 	int				num_commands;
 	int				num_pipes;
 	int				heredoc_quoted;
+	int				heredoc_fd;
 }	t_command_data;
 
 typedef struct s_shell
@@ -89,7 +91,6 @@ typedef struct s_exec_state
 {
 	int	pipefd[2];
 	int	prev_pipe_read;
-	int	heredoc_fd;
 	int	i;
 }	t_exec_state;
 
@@ -170,6 +171,7 @@ void			execute_command_pipeline(t_command_data *data, t_shell *shell);
 // signal.c
 void			set_signals_interactive(void);
 void			set_signals_noninteractive(void);
+void			set_signals_heredoc(void);
 void			ignore_sigquit(void);
 
 //handle_operator.c
@@ -215,9 +217,11 @@ void			error_operator(char op, t_shell *shell);
 void			print_error_simple(const char *message, int exit_code,
 					t_shell *shell);
 void			print_error_command(const char *command, const char *message,
-					int exit_code, t_shell *shell);
+					int exit_code);
 void			print_error_token(const char *token, int exit_code,
 					t_shell *shell);
+void			print_error_command2(const char *command, const char *file,
+					const char *message, int exit_code);
 
 void			initialize_state(t_parse *state, const char *cmd);
 int				check_errors(t_parse *state, t_shell *shell,
@@ -267,7 +271,7 @@ int				execute_builtin_command(char *command, char **args,
 int				handle_input_redirection(t_command_data *data, int *i,
 					int original_stdin, t_shell *shell);
 int				handle_output_redirection(t_command_data *data, int *i,
-					int original_stdout, t_shell *shell);
+					int original_stdout);
 void			restore_fds(int original_stdin, int original_stdout);
 //cd
 int				ft_cd(char **args, int *i, t_shell *shell);
@@ -292,8 +296,7 @@ void			add_env_var(t_shell *shell, char *new_entry, char *name);
 char			*create_env_entry(char *name, char *value);
 void			insertion_sort_env(char **env);
 int				handle_invalid_identifier(char *name, t_shell *shell);
-int				handle_builtin_invalid_option(char *arg, char *cmd_name,
-					char *usage);
+int				handle_builtin_invalid_option(char *arg, char *cmd_name, int is_env);
 //pwd
 int				ft_pwd(void);
 //unset
@@ -381,6 +384,11 @@ char			*expand_tilde(char *token, t_shell *shell);
 int				validate_command(char **args, t_shell *shell);
 int				has_mixed_quotes(const char *str);
 
+//word_splitting.c
+char			**split_expanded_token(const char *expanded_token);
+int				should_split_token(char quote_type, const char *expanded_token);
+int				should_split_mixed_quotes(const char *original_token, const char *expanded_token);
+
 //remove_quotes.c
 char			*remove_quotes(char *str);
 
@@ -392,6 +400,4 @@ void			free_args(char **args, t_command_data *data);
 void			free_command_data(t_command_data *data);
 void			free_state(t_parse *state);
 
-void			print_arguments(t_command_data *data);
-void			print_args(char **args);
 #endif

@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:40:55 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 05:45:37 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:07:56 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,21 +28,29 @@ static int	init_heredoc_pipe(int *pipefd)
 static char	*read_heredoc_line(void)
 {
 	char	*line;
+	size_t	len;
 
 	line = NULL;
-	if (isatty(fileno(stdin)))
-	{
+	if (isatty(STDIN_FILENO))
 		line = readline("> ");
-	}
 	else
 	{
-		line = get_next_line(fileno(stdin));
+		line = get_next_line(STDIN_FILENO);
+		if (line)
+		{
+			len = ft_strlen(line);
+			if (len > 0 && line[len - 1] == '\n')
+				line[len - 1] = '\0';
+		}
 	}
 	if (g_signal == SIGINT)
 	{
-		free(line);
+		if (line)
+			free(line);
 		return (NULL);
 	}
+	if (line == NULL)
+		return (NULL);
 	return (line);
 }
 
@@ -68,23 +76,16 @@ static void	write_heredoc_line(int pipefd, char *line,
 	}
 }
 
-static void	trim_newline(char *line)
-{
-	size_t	len;
-
-	len = ft_strlen(line);
-	if (len > 0 && line[len - 1] == '\n')
-		line[len - 1] = '\0';
-}
-
 int	setup_heredoc(const char *delimiter, t_shell *shell, int suppress_expansion)
 {
 	int		pipefd[2];
 	char	*line;
 
 	line = NULL;
+	g_signal = 0;
 	if (delimiter == NULL || init_heredoc_pipe(pipefd) == -1)
 		return (-1);
+	set_signals_heredoc();
 	while (1)
 	{
 		line = read_heredoc_line();
@@ -92,16 +93,32 @@ int	setup_heredoc(const char *delimiter, t_shell *shell, int suppress_expansion)
 		{
 			close(pipefd[0]);
 			close(pipefd[1]);
+			set_signals_interactive();
+			if (g_signal == SIGINT)
+			{
+				shell->exit_status = 130;
+				g_signal = 0;
+				return (-1);
+			}
 			return (-1);
 		}
-		trim_newline(line);
 		if (ft_strcmp(line, delimiter) == 0)
 		{
 			free(line);
 			close(pipefd[1]);
+			set_signals_interactive();
 			return (pipefd[0]);
 		}
 		write_heredoc_line(pipefd[1], line, suppress_expansion, shell);
 		free(line);
+		if (g_signal == SIGINT)
+		{
+			close(pipefd[0]);
+			close(pipefd[1]);
+			set_signals_interactive();
+			shell->exit_status = 130;
+			g_signal = 0;
+			return (-1);
+		}
 	}
 }

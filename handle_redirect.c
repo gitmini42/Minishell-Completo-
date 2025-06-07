@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:02:00 by pedro             #+#    #+#             */
-/*   Updated: 2025/06/05 16:28:34 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:51:50 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ int	validate_redirect_syntax(char **args, t_indices *indices, t_shell *shell)
 	}
 	if (is_operator(args[indices->i + 1]))
 	{
-		ft_putstr_fd("bash: syntax error near unexpected token `", 2);
+		ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 		ft_putstr_fd(args[indices->i + 1], 2);
 		ft_putstr_fd("'\n", 2);
 		shell->exit_status = 2;
@@ -95,12 +95,8 @@ int	handle_output_redirect(t_output_params *params, t_shell *shell)
 	if (!shell->is_counting && params->base.data->out_redirs
 		&& params->base.data->num_out_redirs)
 	{
-		(open_output_file(params->base.args, params->base.indices,
-				params->token, shell));
-		// {
-		// 	params->base.indices->i += 2;
-		// 	return (-1);
-		// }
+		open_output_file(params->base.args, params->base.indices,
+			params->token, shell);
 		if (add_output_redirection(params) == -1)
 		{
 			shell->exit_status = 1;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   count_commands.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:57:31 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/06 11:44:22 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:35:15 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@ static void	process_pipe_operator(t_count_context *ctx, t_indices *idx,
 	int *command_index)
 {
 	handle_pipe_validation(ctx, idx);
-	// if (ctx->shell->exit_status == 2)
-	// 	return ;
 	handle_pipe(ctx->data, command_index, ctx->shell);
 	idx->j = 0;
 	idx->i++;

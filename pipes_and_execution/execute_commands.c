@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_commands.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:49:46 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 12:13:58 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/07 00:36:54 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ pid_t	*init_execution(t_command_data *data, t_exec_state *state,
 	}
 	ft_memset(pids, 0, sizeof(pid_t) * data->num_commands);
 	state->prev_pipe_read = -1;
-	state->heredoc_fd = -1;
 	state->i = 0;
 	return (pids);
 }
@@ -85,8 +84,7 @@ int	parent_builtin(t_command_data *data, t_exec_state *state, t_shell *shell)
 	cmd = data->commands[state->i];
 	if (data->num_commands == 1 && check_builtin(cmd)
 		&& (!data->input_files || !data->input_files[state->i])
-		&& (!data->num_out_redirs || data->num_out_redirs[state->i] == 0)
-		&& state->heredoc_fd == -1)
+		&& (!data->num_out_redirs || data->num_out_redirs[state->i] == 0))
 	{
 		execute_parent(data, state, shell);
 		return (1);
@@ -102,7 +100,6 @@ void	execute_commands(t_command_data *data, t_shell *shell)
 	state.pipefd[0] = 0;
 	state.pipefd[1] = 0;
 	state.prev_pipe_read = -1;
-	state.heredoc_fd = -1;
 	state.i = 0;
 	pids = NULL;
 	if (!data || !data->commands || data->num_commands == 0)

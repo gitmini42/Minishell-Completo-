@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 04:46:00 by pviegas-          #+#    #+#             */
-/*   Updated: 2025/06/04 04:49:40 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:22:02 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,24 +65,125 @@ static int	is_heredoc_delimiter(char **tokens, int index)
 	return (0);
 }
 
+static int	is_assignment(const char *token)
+{
+	int	i;
+
+	if (!token)
+		return (0);
+	i = 0;
+	while (token[i] && token[i] != '=')
+	{
+		if (!ft_isalnum(token[i]) && token[i] != '_')
+			return (0);
+		i++;
+	}
+	return (token[i] == '=');
+}
+
+static int	should_split_this_token(char **tokens, char *quote_types, int i,
+		char *expanded_token)
+{
+	if (is_assignment(tokens[i]))
+		return (0);
+	if (should_split_token(quote_types[i], expanded_token))
+		return (1);
+	if (has_mixed_quotes(tokens[i])
+		&& should_split_mixed_quotes(tokens[i], expanded_token))
+		return (1);
+	return (0);
+}
+
+static int	count_expanded_tokens(char **tokens,
+		char *quote_types, t_shell *shell)
+{
+	int		total_count;
+	int		i;
+	char	*expanded_token;
+	char	**split_words;
+	int		word_count;
+
+	total_count = 0;
+	i = 0;
+	while (tokens[i])
+	{
+		expanded_token = expand_single_token(tokens[i], quote_types[i], shell,
+				is_heredoc_delimiter(tokens, i));
+		if (should_split_this_token(tokens, quote_types, i, expanded_token))
+		{
+			split_words = split_expanded_token(expanded_token);
+			if (split_words)
+			{
+				word_count = 0;
+				while (split_words[word_count])
+					word_count++;
+				total_count += word_count;
+				while (--word_count >= 0)
+					free(split_words[word_count]);
+				free(split_words);
+			}
+			else
+				total_count++;
+		}
+		else
+			total_count++;
+		free(expanded_token);
+		i++;
+	}
+	return (total_count);
+}
+
+static void	add_split_tokens(char ***expanded, int *out_idx,
+		char *expanded_token)
+{
+	char	**split_words;
+	int		j;
+
+	split_words = split_expanded_token(expanded_token);
+	if (split_words)
+	{
+		j = 0;
+		while (split_words[j])
+		{
+			(*expanded)[(*out_idx)++] = ft_strdup(split_words[j]);
+			j++;
+		}
+		j = 0;
+		while (split_words[j])
+			free(split_words[j++]);
+		free(split_words);
+	}
+	else
+		(*expanded)[(*out_idx)++] = ft_strdup(expanded_token);
+}
+
 char	**expand_tokens(char **tokens, char *quote_types, t_shell *shell)
 {
 	char		**expanded;
-	t_indices	idx;
+	char		*expanded_token;
+	int			total_count;
+	int			i;
+	int			out_idx;
 
-	idx.i = 0;
 	if (!tokens || !tokens[0])
 		return (NULL);
-	expanded = malloc(sizeof(char *) * (count_args(tokens) + 1));
+	total_count = count_expanded_tokens(tokens, quote_types, shell);
+	expanded = malloc(sizeof(char *) * (total_count + 1));
 	if (!expanded)
 		return (NULL);
-	while (tokens[idx.i])
+	i = 0;
+	out_idx = 0;
+	while (tokens[i])
 	{
-		expanded[idx.i] = expand_single_token(tokens[idx.i],
-				quote_types[idx.i], shell,
-				is_heredoc_delimiter(tokens, idx.i));
-		idx.i++;
+		expanded_token = expand_single_token(tokens[i], quote_types[i], shell,
+				is_heredoc_delimiter(tokens, i));
+		if (should_split_this_token(tokens, quote_types, i, expanded_token))
+			add_split_tokens(&expanded, &out_idx, expanded_token);
+		else
+			expanded[out_idx++] = ft_strdup(expanded_token);
+		free(expanded_token);
+		i++;
 	}
-	expanded[idx.i] = NULL;
+	expanded[out_idx] = NULL;
 	return (expanded);
 }

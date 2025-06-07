@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:03:27 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 05:58:29 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/07 00:34:09 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,11 @@ void	wait_commands(pid_t *pids, t_command_data *data, t_shell *shell)
 		}
 		i = i + 1;
 	}
-	free(pids);
+	if (pids)
+	{
+		free(pids);
+		pids = NULL;
+	}
 }
 
 void	fork_child(t_command_data *data, t_exec_state *state,
@@ -83,11 +87,6 @@ void	fork_child(t_command_data *data, t_exec_state *state,
 	if (data->commands[state->i] == NULL)
 		exit(0);
 	has_builtin = check_builtin(data->commands[state->i]);
-	if (state->heredoc_fd != -1)
-	{
-		dup2(state->heredoc_fd, STDIN_FILENO);
-		close(state->heredoc_fd);
-	}
 	setup_pipes_and_redirections(data, state, data->num_commands, shell);
 	if (state->i < data->num_commands - 1)
 		close(state->pipefd[0]);

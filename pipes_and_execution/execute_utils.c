@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:58:37 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 08:13:09 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:12:29 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,6 @@ void	manage_parent(pid_t pid, pid_t *pids, t_exec_state *state,
 		{
 			state->prev_pipe_read = state->pipefd[0];
 			close(state->pipefd[1]);
-		}
-		if (state->heredoc_fd != -1)
-		{
-			close(state->heredoc_fd);
-			state->heredoc_fd = -1;
 		}
 	}
 }
@@ -75,13 +70,13 @@ void	execute_command(int *i, t_shell *shell, pid_t *pids,
 		if (!ft_strchr(data->commands[*i], '/') && path_is_unset_or_empty(shell)
 			&& stat(data->commands[*i], &sb) == 0 && !S_ISDIR(sb.st_mode))
 		{
-			print_error_command(data->commands[*i], "Permission denied", 126,
-				shell);
+			print_error_command(data->commands[*i], "Permission denied", 126
+				);
 			g_signal = 126;
 			cleanup_and_exit(data, pids, shell, 126);
 		}
-		print_error_command(data->commands[*i], "command not found", 127,
-			shell);
+		print_error_command(data->commands[*i], "command not found", 127
+			);
 		g_signal = 127;
 		cleanup_and_exit(data, pids, shell, 127);
 	}
@@ -98,8 +93,11 @@ void	run_pipeline(t_command_data *data, t_exec_state *state,
 
 	if (setup_pipeline(data, state, shell) == -1)
 	{
-		free(pids);
-		shell->exit_status = 1;
+		if (g_signal != SIGINT)
+		{
+			shell->exit_status = 1;
+			g_signal = 0;
+		}
 		return ;
 	}
 	pid = fork();
@@ -111,7 +109,6 @@ void	run_pipeline(t_command_data *data, t_exec_state *state,
 	if (pid < 0)
 	{
 		perror("minishell: fork");
-		free(pids);
 		shell->exit_status = 1;
 		return ;
 	}

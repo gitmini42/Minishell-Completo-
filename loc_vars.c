@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:07:57 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 05:30:49 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/06 21:48:38 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ void	handle_var_assignment(const char *input, t_shell *shell)
 	else
 	{
 		printf("%s\n", name);
-		print_error_command(name, "command not found", 127, shell);
+		print_error_command(name, "command not found", 127);
 	}
 	free(name);
 }

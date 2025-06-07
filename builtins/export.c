@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:07:46 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 11:39:55 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/06 22:11:08 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,7 @@ int	ft_export(char **args, t_shell *shell)
 	while (args[i])
 	{
 		if (args[i][0] == '-' && args[i][1] != '\0')
-			return (handle_builtin_invalid_option(args[i], "export",
-					"export: usage: export [name[=value] ...]\n"));
+			return (handle_builtin_invalid_option(args[i], "export", 0));
 		equal = ft_strchr(args[i], '=');
 		if (equal)
 			status |= handle_export_with_value(args[i], shell);

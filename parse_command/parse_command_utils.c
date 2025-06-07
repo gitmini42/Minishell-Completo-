@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_command_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:36:00 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/06 11:25:55 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/07 01:11:55 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,30 +51,36 @@ void	initialize_state(t_parse *state, const char *cmd)
 	ft_memset(state->args, 0, sizeof(char *) * max_tokens);
 	ft_memset(state->quote_types, 0, sizeof(char) * max_tokens);
 }
-static int	redir_isnot_command(t_parse *state, t_shell *shell)
+
+static int	redir_isnot_command(t_parse *state)
 {
-	if ((ft_strcmp(state->args[0], "\">>\"") == 0) || ft_strcmp(state->args[0], "\'>>\'") == 0)
+	if ((ft_strcmp(state->args[0], "\">>\"") == 0)
+		|| ft_strcmp(state->args[0], "\'>>\'") == 0)
 	{
-		print_error_command(">>", "Command not found",127, shell);
+		print_error_command(">>", "Command not found", 127);
 		return (1);
 	}
-	if ((ft_strcmp(state->args[0], "\">\"") == 0) || ft_strcmp(state->args[0], "\'>\'") == 0)
+	if ((ft_strcmp(state->args[0], "\">\"") == 0)
+		|| ft_strcmp(state->args[0], "\'>\'") == 0)
 	{
-		print_error_command(">", "Command not found",127, shell);
+		print_error_command(">", "Command not found", 127);
 		return (1);
 	}
-	if ((ft_strcmp(state->args[0], "\"<<\"") == 0) || ft_strcmp(state->args[0], "\'>>\'") == 0)
+	if ((ft_strcmp(state->args[0], "\"<<\"") == 0)
+		|| ft_strcmp(state->args[0], "\'>>\'") == 0)
 	{
-		print_error_command("<<", "Command not found",127, shell);
+		print_error_command("<<", "Command not found", 127);
 		return (1);
 	}
-	if ((ft_strcmp(state->args[0], "\"<\"") == 0) || ft_strcmp(state->args[0], "\'>\'") == 0)
+	if ((ft_strcmp(state->args[0], "\"<\"") == 0)
+		|| ft_strcmp(state->args[0], "\'>\'") == 0)
 	{
-		print_error_command("<", "Command not found",127, shell);
+		print_error_command("<", "Command not found", 127);
 		return (1);
 	}
-	return 0;
+	return (0);
 }
+
 int	check_errors(t_parse *state, t_shell *shell, int last_was_operator)
 {
 	if (state->in_quotes)
@@ -82,8 +88,8 @@ int	check_errors(t_parse *state, t_shell *shell, int last_was_operator)
 		print_error_simple("syntax error: unclosed quotes", 2, shell);
 		return (0);
 	}
-	if (redir_isnot_command(state, shell))
-		return 0;
+	if (redir_isnot_command(state))
+		return (0);
 	if (last_was_operator)
 	{
 		print_error_token("newline", 2, shell);
