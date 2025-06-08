@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:23:43 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/07 02:05:43 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/07 23:03:08 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ void	print_error_command(const char *command, const char *message,
 
 void	print_error_token(const char *token, int exit_code, t_shell *shell)
 {
-	ft_putstr_fd("minishell: syntax error near token '", 2);
+	ft_putstr_fd("minishell: syntax error unexpected token '", 2);
 	ft_putstr_fd((char *)token, 2);
 	ft_putstr_fd("'\n", 2);
 	shell->exit_status = exit_code;

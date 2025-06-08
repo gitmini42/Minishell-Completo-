@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:45:50 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/06 22:41:16 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/07 22:55:17 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,16 @@ static char	*check_direct_executable(char *command)
 	return (result);
 }
 
-static int	search_in_path_error(t_shell *shell)
+static int	is_executable_file(char *path)
 {
-	ft_putstr_fd("Error: malloc failed\n", STDERR_FILENO);
-	shell->exit_status = 1;
+	struct stat	sb;
+
+	if (access(path, X_OK) != 0)
+		return (0);
+	if (stat(path, &sb) != 0)
+		return (0);
+	if (S_ISDIR(sb.st_mode))
+		return (0);
 	return (1);
 }
 
@@ -59,17 +65,17 @@ static char	*search_in_path(char *command, char **path_dirs, t_shell *shell)
 		temp = ft_strjoin(path_dirs[i++], "/");
 		if (temp == NULL)
 		{
-			shell->exit_status = search_in_path_error(shell);
+			print_error_simple("malloc failed", 1, shell);
 			return (NULL);
 		}
 		full_path = ft_strjoin(temp, command);
 		free(temp);
 		if (full_path == NULL)
 		{
-			shell->exit_status = search_in_path_error(shell);
+			print_error_simple("malloc failed", 1, shell);
 			return (NULL);
 		}
-		if (access(full_path, X_OK) == 0)
+		if (is_executable_file(full_path))
 			return (full_path);
 		free(full_path);
 	}

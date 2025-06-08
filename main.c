@@ -52,17 +52,14 @@ int	process_input(char *input, t_shell *shell)
 	if (g_signal == SIGINT)
 	{
 		shell->exit_status = 130;
-		g_signal = 0;
 		return (1);
 	}
 	if (input == NULL)
 		return (0);
 	if (input[0] == '\0')
 	{
-		g_signal = 0;
 		return (1);
 	}
-	g_signal = 0;
 	add_history(input);
 	if (is_var_assignment(input))
 	{
@@ -131,6 +128,7 @@ int	main(int argc, char *argv[], char *envp[])
 				free(line);
 			}
 		}
+		g_signal = 0;
 		result = process_input(input, shell);
 		if (result == 0)
 		{
@@ -139,7 +137,6 @@ int	main(int argc, char *argv[], char *envp[])
 		if (input && input[0] != '\0' && result == 2)
 		{
 			handle_command(input, shell);
-			g_signal = 0;
 		}
 		if (input)
 			free(input);

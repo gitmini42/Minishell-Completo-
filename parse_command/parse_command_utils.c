@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:36:00 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/07 01:11:55 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/08 00:09:57 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,8 @@ static int	redir_isnot_command(t_parse *state)
 
 int	check_errors(t_parse *state, t_shell *shell, int last_was_operator)
 {
+	if (state->args[0] == NULL)
+		return 0;
 	if (state->in_quotes)
 	{
 		print_error_simple("syntax error: unclosed quotes", 2, shell);

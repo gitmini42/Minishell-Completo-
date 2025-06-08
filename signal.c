@@ -18,7 +18,7 @@ void	signal_reset_prompt(int signo)
 {
 	(void)signo;
 	g_signal = SIGINT;
-	write(1, "\n", 1);
+	write(1, "^C\n", 3);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
@@ -37,8 +37,6 @@ void	signal_heredoc_interrupt(int signal)
 	(void)signal;
 	g_signal = SIGINT;
 	write(1, "\n", 1);
-	rl_done = 1;
-	rl_replace_line("", 0);
 }
 
 void	ignore_sigquit(void)

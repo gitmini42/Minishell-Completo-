@@ -30,27 +30,22 @@ static char	*read_heredoc_line(void)
 	char	*line;
 	size_t	len;
 
-	line = NULL;
-	if (isatty(STDIN_FILENO))
-		line = readline("> ");
-	else
-	{
-		line = get_next_line(STDIN_FILENO);
-		if (line)
-		{
-			len = ft_strlen(line);
-			if (len > 0 && line[len - 1] == '\n')
-				line[len - 1] = '\0';
-		}
-	}
+	if (g_signal == SIGINT)
+		return (NULL);
+	write(1, "> ", 2);
+	line = get_next_line(STDIN_FILENO);
 	if (g_signal == SIGINT)
 	{
 		if (line)
 			free(line);
 		return (NULL);
 	}
-	if (line == NULL)
-		return (NULL);
+	if (line)
+	{
+		len = ft_strlen(line);
+		if (len > 0 && line[len - 1] == '\n')
+			line[len - 1] = '\0';
+	}
 	return (line);
 }
 
@@ -81,44 +76,52 @@ int	setup_heredoc(const char *delimiter, t_shell *shell, int suppress_expansion)
 	int		pipefd[2];
 	char	*line;
 
-	line = NULL;
-	g_signal = 0;
 	if (delimiter == NULL || init_heredoc_pipe(pipefd) == -1)
 		return (-1);
+	g_signal = 0;
 	set_signals_heredoc();
 	while (1)
 	{
+		if (g_signal == SIGINT)
+		{
+			close(pipefd[0]);
+			close(pipefd[1]);
+			g_signal = 0;
+			set_signals_interactive();
+			shell->exit_status = 130;
+			return (-1);
+		}
 		line = read_heredoc_line();
+		if (g_signal == SIGINT)
+		{
+			if (line)
+				free(line);
+			close(pipefd[0]);
+			close(pipefd[1]);
+			g_signal = 0;
+			set_signals_interactive();
+			shell->exit_status = 130;
+			return (-1);
+		}
 		if (line == NULL)
 		{
 			close(pipefd[0]);
 			close(pipefd[1]);
+			g_signal = 0;
 			set_signals_interactive();
-			if (g_signal == SIGINT)
-			{
-				shell->exit_status = 130;
-				g_signal = 0;
-				return (-1);
-			}
+			if (isatty(STDIN_FILENO))
+				write(2, "warning: here-document delimited by end-of-file\n", 49);
 			return (-1);
 		}
 		if (ft_strcmp(line, delimiter) == 0)
 		{
 			free(line);
 			close(pipefd[1]);
+			g_signal = 0;
 			set_signals_interactive();
 			return (pipefd[0]);
 		}
 		write_heredoc_line(pipefd[1], line, suppress_expansion, shell);
 		free(line);
-		if (g_signal == SIGINT)
-		{
-			close(pipefd[0]);
-			close(pipefd[1]);
-			set_signals_interactive();
-			shell->exit_status = 130;
-			g_signal = 0;
-			return (-1);
-		}
 	}
 }
