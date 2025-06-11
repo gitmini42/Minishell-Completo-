@@ -61,7 +61,7 @@ void	execute_parent(t_command_data *data, t_exec_state *state,
 	}
 	else if (ft_strcmp(data->commands[state->i], "exit") == 0)
 	{
-		ft_exit(data->arguments[state->i], shell);
+		ft_exit(data->arguments[state->i], shell, data);
 		shell->is_save_to_execute = false;
 	}
 }
