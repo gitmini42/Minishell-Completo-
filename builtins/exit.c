@@ -32,7 +32,7 @@ static int	is_numeric(const char *str)
 	return (1);
 }
 
-static void	print_numeric_error(const char *arg, t_shell *shell)
+static void	print_numeric_error(const char *arg, t_shell *shell, t_command_data *data)
 {
 	char	*msg;
 	char	*tmp;
@@ -42,19 +42,21 @@ static void	print_numeric_error(const char *arg, t_shell *shell)
 	free(tmp);
 	ft_putstr_fd(msg, STDERR_FILENO);
 	free(msg);
-	shell->exit_status = 2;
+	shell->exit_status = 2;	
+	free_command_data(data);
+	free(data);
 	finalize_shell(shell);
 	exit(2);
 }
 
-void	ft_exit(char **args, t_shell *shell)
+void	ft_exit(char **args, t_shell *shell, t_command_data *data)
 {
 	int	exit_code;
 
 	if (args[1])
 	{
 		if (!is_numeric(args[1]))
-			print_numeric_error(args[1], shell);
+			print_numeric_error(args[1], shell, data);
 		if (args[2])
 		{
 			print_error_simple("exit: too many arguments", 1, shell);
@@ -66,6 +68,8 @@ void	ft_exit(char **args, t_shell *shell)
 	else
 		exit_code = shell->exit_status;
 	shell->exit_status = exit_code;
+	free_command_data(data);
+	free(data);
 	finalize_shell(shell);
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(exit_code);
