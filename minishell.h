@@ -417,7 +417,7 @@ int				ft_pwd(void);
 //unset
 int				ft_unset(char **args, t_var **vars, char ***envp);
 //exit
-void			ft_exit(char **args, t_shell *shell);
+void			ft_exit(char **args, t_shell *shell, t_command_data *data);
 //loc_vars
 int				is_valid_var_name(const char *name);
 void			store_var(char *name, char *value, t_var **vars);
