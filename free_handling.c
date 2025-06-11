@@ -6,26 +6,11 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:19:30 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/06 21:52:46 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/10 20:37:30 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-static void	free_input_files(t_command_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->num_commands)
-	{
-		if (data->input_files[i])
-			free(data->input_files[i]);
-		i++;
-	}
-	free(data->input_files);
-	data->input_files = NULL;
-}
 
 static void	free_out_redirs_loop(t_redirection **out_redirs, \
 			int *num_out_redirs, int num_cmds)
@@ -67,6 +52,55 @@ static void	free_out_redirs(t_command_data *data)
 	}
 }
 
+static void	free_heredoc_delims(t_command_data *data)
+{
+	int	i;
+
+	if (data->heredoc_delims)
+	{
+		i = 0;
+		while (i < data->num_commands)
+		{
+			if (data->heredoc_delims[i])
+			{
+				free(data->heredoc_delims[i]);
+				data->heredoc_delims[i] = NULL;
+			}
+			i++;
+		}
+		free(data->heredoc_delims);
+		data->heredoc_delims = NULL;
+	}
+}
+
+static void	free_heredoc_fds_and_quoted(t_command_data *data)
+{
+	int	i;
+
+	if (data->heredoc_fds)
+	{
+		i = 0;
+		while (i < data->num_commands)
+		{
+			if (data->heredoc_fds[i] != -1)
+			{
+				close(data->heredoc_fds[i]);
+				data->heredoc_fds[i] = -1;
+			}
+			i++;
+		}
+		free(data->heredoc_fds);
+		data->heredoc_fds = NULL;
+	}
+	if (data->heredoc_quoted)
+	{
+		free(data->heredoc_quoted);
+		data->heredoc_quoted = NULL;
+	}
+}
+
+/// @brief Frees all memory allocated for command data structure
+/// @param data Command data structure to free (can be NULL)
 void	free_command_data(t_command_data *data)
 {
 	if (!data)
@@ -77,11 +111,8 @@ void	free_command_data(t_command_data *data)
 		free_data_arguments(data->arguments, data->num_commands);
 	if (data->input_files)
 		free_input_files(data);
-	if (data->heredoc_delim)
-	{
-		free(data->heredoc_delim);
-		data->heredoc_delim = NULL;
-	}
+	free_heredoc_delims(data);
+	free_heredoc_fds_and_quoted(data);
 	free_out_redirs(data);
 	data->num_commands = 0;
 	data->num_pipes = 0;

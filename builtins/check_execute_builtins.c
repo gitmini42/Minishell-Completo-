@@ -6,13 +6,14 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:06:42 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/06 21:47:43 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 03:54:02 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	open_out_file(t_redirection *redir, int original_stdout)
+static int	open_out_file(t_redirection *redir,
+			int original_stdout, t_shell *shell)
 {
 	int	fd_out;
 	int	flags;
@@ -25,7 +26,8 @@ static int	open_out_file(t_redirection *redir, int original_stdout)
 	fd_out = open(redir->file, flags, 0666);
 	if (fd_out == -1)
 	{
-		print_error_command(redir->file, "Failed to open file", 1);
+		print_error_command(redir->file, "Failed to open file");
+		shell->exit_status = 1;
 		restore_fds(STDIN_FILENO, original_stdout);
 		return (-1);
 	}
@@ -35,7 +37,7 @@ static int	open_out_file(t_redirection *redir, int original_stdout)
 }
 
 static int	handle_redirection_loop(t_command_data *data, int i,
-		int original_stdout)
+		int original_stdout, t_shell *shell)
 {
 	int	j;
 
@@ -43,7 +45,7 @@ static int	handle_redirection_loop(t_command_data *data, int i,
 	while (j < data->num_out_redirs[i])
 	{
 		if (open_out_file(&data->out_redirs[i][j],
-			original_stdout) == -1)
+			original_stdout, shell) == -1)
 			return (1);
 		j++;
 	}
@@ -51,11 +53,11 @@ static int	handle_redirection_loop(t_command_data *data, int i,
 }
 
 int	handle_output_redirection(t_command_data *data, int *i,
-		int original_stdout)
+		int original_stdout, t_shell *shell)
 {
 	if (data->num_out_redirs && data->num_out_redirs[*i] > 0)
 	{
-		if (handle_redirection_loop(data, *i, original_stdout) != 0)
+		if (handle_redirection_loop(data, *i, original_stdout, shell) != 0)
 			return (1);
 	}
 	return (0);
@@ -102,7 +104,7 @@ int	child_builtin(int *i, t_shell *shell, t_command_data *data)
 	args = data->arguments[*i];
 	if (handle_input_redirection(data, i, original_stdin, shell))
 		return (1);
-	if (handle_output_redirection(data, i, original_stdout))
+	if (handle_output_redirection(data, i, original_stdout, shell))
 		return (1);
 	execute_builtin_command(command, args, shell, i);
 	restore_fds(original_stdin, original_stdout);

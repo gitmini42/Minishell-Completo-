@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:08:13 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/07 01:36:19 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:56:05 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,12 @@ static void	remove_from_env(char *name, char ***envp)
 	}
 }
 
+/// @brief Implementation of unset builtin - removes variables
+/// from environment and local vars
+/// @param args Command arguments (unset name1 name2...)
+/// @param vars Pointer to local variables linked list
+/// @param envp Pointer to environment variables array
+/// @return 0 on success, 1 on error (invalid identifier)
 int	ft_unset(char **args, t_var **vars, char ***envp)
 {
 	int	i;

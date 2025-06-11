@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:08:42 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 11:20:55 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/10 20:37:38 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,4 +67,28 @@ void	free_args(char **args, t_command_data *data)
 	free(args);
 	if (data)
 		free_command_data(data);
+}
+
+void	cleanup_command_data(t_command_data *data)
+{
+	if (data)
+	{
+		free_command_data(data);
+		free(data);
+	}
+}
+
+void	free_input_files(t_command_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->num_commands)
+	{
+		if (data->input_files[i])
+			free(data->input_files[i]);
+		i++;
+	}
+	free(data->input_files);
+	data->input_files = NULL;
 }

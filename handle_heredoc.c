@@ -3,19 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   handle_heredoc.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:19:14 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 11:19:17 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/10 20:40:48 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static int	has_mixed_quotes_in_delimiter(char *delim, size_t len)
+{
+	size_t	i;
+	int		quote_count;
+
+	quote_count = 0;
+	i = 0;
+	while (i < len)
+	{
+		if (delim[i] == '"' || delim[i] == '\'')
+			quote_count++;
+		i++;
+	}
+	return (quote_count > 2);
+}
+
 char	*process_quoted_delimiter(char *delim, size_t len)
 {
 	if (len >= 2 && (delim[0] == '"' || delim[0] == '\'')
-		&& delim[len - 1] == delim[0])
+		&& delim[len - 1] == delim[0]
+		&& !has_mixed_quotes_in_delimiter(delim, len))
 	{
 		return (ft_strndup(delim + 1, len - 2));
 	}
@@ -46,31 +63,31 @@ char	*clean_mixed_quotes(char *delim, size_t len)
 	return (clean_delim);
 }
 
-static void	assign_heredoc_data(t_command_data *data, char *delim, int quoted)
+void	set_heredoc_delimiter(t_command_data *data, char *delim, int cmd_index)
 {
-	data->heredoc_delim = delim;
-	data->heredoc_quoted = quoted;
-}
-
-void	set_heredoc_delimiter(t_command_data *data, char *delim)
-{
-	size_t	len;
 	char	*processed_delim;
+	char	*temp_delim;
 
-	len = ft_strlen(delim);
-	processed_delim = process_quoted_delimiter(delim, len);
-	if (processed_delim)
-		assign_heredoc_data(data, processed_delim, 1);
-	else if (ft_strchr(delim, '\'') || ft_strchr(delim, '"'))
+	if (ft_strchr(delim, '\'') || ft_strchr(delim, '"'))
 	{
-		processed_delim = clean_mixed_quotes(delim, len);
+		temp_delim = ft_strdup(delim);
+		processed_delim = remove_quotes(temp_delim);
 		if (processed_delim)
-			assign_heredoc_data(data, processed_delim, 1);
+		{
+			data->heredoc_delims[cmd_index] = processed_delim;
+			data->heredoc_quoted[cmd_index] = 1;
+		}
 		else
-			assign_heredoc_data(data, ft_strdup(delim), 0);
+		{
+			data->heredoc_delims[cmd_index] = ft_strdup(delim);
+			data->heredoc_quoted[cmd_index] = 0;
+		}
 	}
 	else
-		assign_heredoc_data(data, ft_strdup(delim), 0);
+	{
+		data->heredoc_delims[cmd_index] = ft_strdup(delim);
+		data->heredoc_quoted[cmd_index] = 0;
+	}
 }
 
 int	validate_heredoc_args(char **args, t_indices *indices, t_shell *shell)

@@ -12,6 +12,10 @@
 
 #include "../minishell.h"
 
+/// @brief Parses and skips -n flags at start of echo arguments
+/// @param args Echo command arguments array
+/// @param newline Pointer to newline flag (set to 0 if -n found)
+/// @return Index of first non-flag argument
 static int	skip_n_flags(char **args, int *newline)
 {
 	int	i;
@@ -32,6 +36,9 @@ static int	skip_n_flags(char **args, int *newline)
 	return (i);
 }
 
+/// @brief Implementation of echo builtin command with -n flag support
+/// @param args Command arguments including echo command name at index 0
+/// @param shell Global shell state for exit status setting
 void	ft_echo(char **args, t_shell *shell)
 {
 	int	i;

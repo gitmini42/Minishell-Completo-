@@ -100,6 +100,10 @@ int	handle_export_without_value(char *arg, t_shell *shell)
 	return (0);
 }
 
+/// @brief Implementation of export builtin - exports variables to environment
+/// @param args Command arguments (export [name[=value]]...)
+/// @param shell Global shell state for environment and local variables
+/// @return 0 on success, 1 on error (invalid identifier or option)
 int	ft_export(char **args, t_shell *shell)
 {
 	int		i;

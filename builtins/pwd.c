@@ -3,15 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:08:06 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/04/23 15:57:11 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:56:21 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/// @brief Implementation of pwd builtin command -
+/// prints current working directory
+/// @return 0 on success, 1 on getcwd failure
 int	ft_pwd(void)
 {
 	char	cwd[4096];

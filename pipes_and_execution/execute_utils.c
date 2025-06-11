@@ -6,12 +6,17 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:58:37 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/07 01:12:29 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:51:29 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/// @brief Performs cleanup and exits child process with specified code
+/// @param data Command data structure to free
+/// @param pids PID array to free
+/// @param shell Shell state to clean up (environment and variables)
+/// @param exit_code Exit status for child process
 void	cleanup_and_exit(t_command_data *data, pid_t *pids, t_shell *shell,
 		int exit_code)
 {
@@ -21,6 +26,12 @@ void	cleanup_and_exit(t_command_data *data, pid_t *pids, t_shell *shell,
 	exit(exit_code);
 }
 
+/// @brief Manages parent process operations after
+/// fork during pipeline execution
+/// @param pid Child process ID from fork
+/// @param pids Array to store all child process IDs
+/// @param state Execution state with pipe file descriptors and counters
+/// @param data Command data structure with pipeline information
 void	manage_parent(pid_t pid, pid_t *pids, t_exec_state *state,
 	t_command_data *data)
 {
@@ -40,6 +51,9 @@ void	manage_parent(pid_t pid, pid_t *pids, t_exec_state *state,
 	}
 }
 
+/// @brief Checks if PATH environment variable is unset or empty
+/// @param shell Global shell state containing environment variables
+/// @return 1 if PATH is unset or empty string, 0 if PATH has value
 static int	path_is_unset_or_empty(t_shell *shell)
 {
 	int	i;
@@ -58,6 +72,12 @@ static int	path_is_unset_or_empty(t_shell *shell)
 	return (1);
 }
 
+/// @brief Executes single command in pipeline with
+/// path resolution and error handling
+/// @param i Current command index in pipeline
+/// @param shell Global shell state for environment and error reporting
+/// @param pids Process ID array for cleanup on error
+/// @param data Command data containing command and argument arrays
 void	execute_command(int *i, t_shell *shell, pid_t *pids,
 	t_command_data *data)
 {
@@ -70,14 +90,14 @@ void	execute_command(int *i, t_shell *shell, pid_t *pids,
 		if (!ft_strchr(data->commands[*i], '/') && path_is_unset_or_empty(shell)
 			&& stat(data->commands[*i], &sb) == 0 && !S_ISDIR(sb.st_mode))
 		{
-			print_error_command(data->commands[*i], "Permission denied", 126
-				);
+			print_error_command(data->commands[*i], "Permission denied");
 			g_signal = 126;
+			shell->exit_status = 126;
 			cleanup_and_exit(data, pids, shell, 126);
 		}
-		print_error_command(data->commands[*i], "command not found", 127
-			);
+		print_error_command(data->commands[*i], "command not found");
 		g_signal = 127;
+		shell->exit_status = 127;
 		cleanup_and_exit(data, pids, shell, 127);
 	}
 	execve(full_path, data->arguments[*i], shell->envp);
@@ -86,6 +106,11 @@ void	execute_command(int *i, t_shell *shell, pid_t *pids,
 	cleanup_and_exit(data, pids, shell, shell->exit_status);
 }
 
+/// @brief Runs single command in pipeline with fork and pipe management
+/// @param data Command data structure with pipeline information
+/// @param state Execution state tracking pipes and current command
+/// @param shell Global shell state for environment and error handling
+/// @param pids Process ID array for child process tracking
 void	run_pipeline(t_command_data *data, t_exec_state *state,
 	t_shell *shell, pid_t *pids)
 {

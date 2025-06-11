@@ -6,12 +6,17 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:49:46 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/07 00:36:54 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 01:53:04 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/// @brief Initializes execution state and allocates PID array for pipeline
+/// @param data Command data structure containing pipeline information
+/// @param state Execution state to initialize
+/// @param shell Global shell state for error handling
+/// @return Allocated PID array for child processes, NULL on failure
 pid_t	*init_execution(t_command_data *data, t_exec_state *state,
 	t_shell *shell)
 {
@@ -41,34 +46,46 @@ void	execute_parent(t_command_data *data, t_exec_state *state,
 	if (ft_strcmp(data->commands[state->i], "cd") == 0)
 	{
 		ft_cd(data->arguments[state->i], &state->i, shell);
-		get_shell()->is_save_to_execute = false;
+		shell->is_save_to_execute = false;
 	}
 	else if (ft_strcmp(data->commands[state->i], "export") == 0)
 	{
 		shell->exit_status = ft_export(data->arguments[state->i], shell);
-		get_shell()->is_save_to_execute = false;
+		shell->is_save_to_execute = false;
 	}
 	else if (ft_strcmp(data->commands[state->i], "unset") == 0)
 	{
 		shell->exit_status = ft_unset(data->arguments[state->i], \
 				&shell->vars, &shell->envp);
-		get_shell()->is_save_to_execute = false;
+		shell->is_save_to_execute = false;
 	}
 	else if (ft_strcmp(data->commands[state->i], "exit") == 0)
 	{
 		ft_exit(data->arguments[state->i], shell);
-		get_shell()->is_save_to_execute = false;
+		shell->is_save_to_execute = false;
 	}
 }
 
 int	handle_signal_interruption(pid_t *pids, t_exec_state *state,
 	t_command_data *data, t_shell *shell)
 {
+	int	i;
+
+	(void)shell;
 	if (g_signal != 0)
 	{
-		handle_interrupt_signals(pids, state, data);
-		shell->exit_status = 130;
-		g_signal = 0;
+		i = 0;
+		while (i < data->num_commands)
+		{
+			if (pids[i] > 0)
+				kill(pids[i], SIGINT);
+			i++;
+		}
+		if (state->prev_pipe_read != -1)
+		{
+			close(state->prev_pipe_read);
+			state->prev_pipe_read = -1;
+		}
 		return (1);
 	}
 	return (0);
@@ -78,7 +95,7 @@ int	parent_builtin(t_command_data *data, t_exec_state *state, t_shell *shell)
 {
 	char	*cmd;
 
-	get_shell()->is_save_to_execute = true;
+	shell->is_save_to_execute = true;
 	if (!data || !data->commands[state->i])
 		return (0);
 	cmd = data->commands[state->i];
@@ -108,7 +125,7 @@ void	execute_commands(t_command_data *data, t_shell *shell)
 	pids = init_execution(data, &state, shell);
 	if (pids == NULL)
 		return ;
-	set_signals_noninteractive();
+	set_signals_simple(1);
 	while (state.i < data->num_commands)
 	{
 		run_pipeline(data, &state, shell, pids);
@@ -116,6 +133,5 @@ void	execute_commands(t_command_data *data, t_shell *shell)
 			break ;
 	}
 	finalize_execution(&state, pids, data, shell);
-	g_signal = 0;
 	set_signals_interactive();
 }

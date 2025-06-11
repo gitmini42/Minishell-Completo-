@@ -6,12 +6,16 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:57:46 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/07 01:34:16 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:54:02 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/// @brief Validates pipe syntax and increments command count
+/// during analysis phase
+/// @param ctx Count context with args, data, and shell state
+/// @param idx Current parsing position indices
 void	handle_pipe_validation(t_count_context *ctx, t_indices *idx)
 {
 	if (idx->j == 0)
@@ -38,6 +42,9 @@ void	handle_pipe_validation(t_count_context *ctx, t_indices *idx)
 	}
 }
 
+/// @brief Processes heredoc operator (<<) during command counting phase
+/// @param ctx Count context with args, data, and shell state
+/// @param idx Current parsing position indices (modified to skip delimiter)
 void	process_heredoc_operator(t_count_context *ctx, t_indices *idx)
 {
 	if (idx->i + 1 >= (size_t)ctx->count || ctx->args[idx->i + 1] == NULL)
@@ -49,6 +56,10 @@ void	process_heredoc_operator(t_count_context *ctx, t_indices *idx)
 	idx->i += 2;
 }
 
+/// @brief Processes redirection operators (<, >, >>) during command counting
+/// @param ctx Count context with args, data, and shell state
+/// @param idx Current parsing position indices (modified to skip filename)
+/// @param command_index Current command index in pipeline
 void	process_redirect_operator(t_count_context *ctx, t_indices *idx,
 	int command_index)
 {
@@ -69,6 +80,11 @@ void	process_redirect_operator(t_count_context *ctx, t_indices *idx,
 	handle_redirect(&redirect_ctx);
 }
 
+/// @brief Validates counting context and initializes parsing state
+/// @param ctx Count context to validate
+/// @param idx Indices structure to initialize
+/// @param command_index Command index pointer to initialize
+/// @return 1 on success, 0 on invalid input
 int	validate_args_and_init(t_count_context *ctx, t_indices *idx,
 	int *command_index)
 {
@@ -84,6 +100,10 @@ int	validate_args_and_init(t_count_context *ctx, t_indices *idx,
 	return (1);
 }
 
+/// @brief Validates current argument during counting iteration
+/// @param ctx Count context with args and shell state
+/// @param i Current argument index to check
+/// @return 1 if valid, 0 if NULL or error
 int	check_current_arg(t_count_context *ctx, size_t i)
 {
 	if (ctx->args[i] == NULL)

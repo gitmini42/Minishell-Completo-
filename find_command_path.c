@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:45:50 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/07 22:55:17 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:58:06 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,11 @@ static char	*search_in_path(char *command, char **path_dirs, t_shell *shell)
 	return (NULL);
 }
 
+/// @brief Searches for executable command in PATH directories
+/// or validates absolute path
+/// @param command Command name or path to search for
+/// @param shell Global shell state for PATH environment variable access
+/// @return Full path to executable, or NULL if not found/not executable
 char	*find_command_path(char *command, t_shell *shell)
 {
 	char	*path;

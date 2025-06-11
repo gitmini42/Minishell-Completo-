@@ -6,12 +6,14 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:35:24 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 08:15:15 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:50:15 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/// @brief Handles quote character processing during tokenization
+/// @param state Parser state with current position and quote context
 static void	handle_quotes(t_parse *state)
 {
 	if ((state->cmd[state->i] == '\'' || state->cmd[state->i] == '"') && \
@@ -28,6 +30,9 @@ static void	handle_quotes(t_parse *state)
 	}
 }
 
+/// @brief Handles brace character processing during 
+/// tokenization (unused feature)
+/// @param state Parser state with current position
 static void	handle_braces(t_parse *state)
 {
 	if (state->in_quotes)
@@ -40,6 +45,9 @@ static void	handle_braces(t_parse *state)
 	}
 }
 
+/// @brief Main token processing function during command parsing
+/// @param state Parser state machine with current position and context
+/// @param last_was_operator Pointer to flag tracking previous token type
 void	process_token(t_parse *state, int *last_was_operator)
 {
 	int	had_quotes;

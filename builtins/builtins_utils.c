@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 17:20:50 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 11:21:39 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/09 19:05:16 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	check_builtin(char *command)
 	return (0);
 }
 
-const char	*get_var_value(const char *name, t_var *vars)
+/* const char	*get_var_value(const char *name, t_var *vars)
 {
 	t_var	*var;
 
@@ -39,7 +39,7 @@ const char	*get_var_value(const char *name, t_var *vars)
 		var = var->next;
 	}
 	return (NULL);
-}
+} */
 
 int	ft_isspace(int c)
 {

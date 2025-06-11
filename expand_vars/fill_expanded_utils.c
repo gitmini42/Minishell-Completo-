@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 07:01:36 by pviegas-          #+#    #+#             */
-/*   Updated: 2025/06/07 01:32:59 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/10 20:10:24 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,6 @@ void	fill_exit_status(char *dest, t_indices *indices, t_shell *shell)
 	indices->j += len;
 }
 
-static void	handle_invalid_var(char *dest, t_indices *indices)
-{
-	dest[indices->j++] = '$';
-}
-
 void	fill_var_name(char *dest, const char *src, t_indices *indices,
 	t_shell *shell)
 {
@@ -50,11 +45,11 @@ void	fill_var_name(char *dest, const char *src, t_indices *indices,
 	indices->i++;
 	start = indices->i;
 	if (!isalpha(src[start]) && src[start] != '_')
-		return (handle_invalid_var(dest, indices));
+		return ((void)(dest[indices->j++] = '$'));
 	while (isalnum(src[indices->i]) || src[indices->i] == '_')
 		indices->i++;
 	if (indices->i == start)
-		return (handle_invalid_var(dest, indices));
+		return ((void)(dest[indices->j++] = '$'));
 	key = ft_strndup(&src[start], indices->i - start);
 	if (!key)
 		return ;

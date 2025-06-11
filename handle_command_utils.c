@@ -12,91 +12,101 @@
 
 #include "minishell.h"
 
-void	cleanup_command_data(t_command_data *data)
+static bool	handle_empty_command_filtered(char **filtered_args,
+		t_parse_result *parsed, t_shell *shell)
 {
-	if (data)
+	int	count;
+
+	count = 0;
+	while (filtered_args[count])
+		count++;
+	if (count == 0)
 	{
-		free_command_data(data);
-		free(data);
+		cleanup_parse_data(parsed, NULL, filtered_args);
+		shell->exit_status = 0;
+		return (true);
 	}
+	if (filtered_args[0] && !*filtered_args[0])
+	{
+		print_error_command("", "command not found");
+		shell->exit_status = 127;
+		cleanup_parse_data(parsed, NULL, filtered_args);
+		return (true);
+	}
+	return (false);
 }
 
 char	**parse_and_expand_command(char *input, t_shell *shell,
 		t_parse_result *parsed)
 {
 	char	**expanded_args;
-	int		count;
+	char	**filtered_args;
 
 	*parsed = parse_command(input, shell);
 	if (!parsed->args)
 		return (NULL);
 	expanded_args = expand_tokens(parsed->args, parsed->quote_types, shell);
 	if (!expanded_args)
+		return (cleanup_parse_data(parsed, NULL, NULL));
+	filtered_args = create_filtered_args_improved(expanded_args, parsed);
+	if (!filtered_args)
 	{
-		cleanup_parse_data(parsed, NULL, NULL);
+		free_args(expanded_args, NULL);
+		return (cleanup_parse_data(parsed, NULL, NULL));
+	}
+	if (handle_empty_command_filtered(filtered_args, parsed, shell))
+	{
+		free_args(expanded_args, NULL);
 		return (NULL);
 	}
-	count = 0;
-	while (expanded_args[count])
-		count++;
-	if (count == 0)
-	{
-		cleanup_parse_data(parsed, expanded_args, NULL);
-		return (NULL);
-	}
-	return (expanded_args);
+	free_args(expanded_args, NULL);
+	return (filtered_args);
 }
 
-char	**create_filtered_args(char **expanded_args)
+static int	should_keep_empty_arg(char *original_token, char quote_type)
 {
-	char	**filtered_args;
-	int		i;
-	int		j;
-	int		count;
+	if (quote_type == '"' || quote_type == '\'')
+		return (1);
+	if (original_token && ((ft_strcmp(original_token, "\"\"") == 0)
+			|| (ft_strcmp(original_token, "''") == 0)))
+		return (1);
+	return (0);
+}
 
-	count = 0;
-	while (expanded_args[count])
-		count++;
-	filtered_args = malloc(sizeof(char *) * (count + 1));
-	if (!filtered_args)
-		return (NULL);
+static int	filter_and_copy_args(char **filtered_args, char **expanded_args,
+	t_parse_result *parsed)
+{
+	int	i;
+	int	j;
+
 	i = 0;
 	j = 0;
 	while (expanded_args[i])
 	{
-		filtered_args[j] = ft_strdup(expanded_args[i]);
-		j++;
+		if (expanded_args[i][0] != '\0' ||
+			should_keep_empty_arg(parsed->args[i], parsed->quote_types[i]))
+		{
+			if (filtered_args)
+				filtered_args[j] = ft_strdup(expanded_args[i]);
+			j++;
+		}
 		i++;
 	}
-	filtered_args[j] = NULL;
-	return (filtered_args);
+	if (filtered_args)
+		filtered_args[j] = NULL;
+	return (j);
 }
 
-t_command_data	*prepare_command_data(char **filtered_args, t_shell *shell)
+char	**create_filtered_args_improved(char **expanded_args,
+	t_parse_result *parsed)
 {
-	t_command_data	*data;
-	int				count;
+	char	**filtered_args;
+	int		count;
 
-	count = 0;
-	while (filtered_args[count])
-		count++;
-	data = malloc(sizeof(t_command_data));
-	if (!data)
+	count = filter_and_copy_args(NULL, expanded_args, parsed);
+	filtered_args = malloc(sizeof(char *) * (count + 1));
+	if (!filtered_args)
 		return (NULL);
-	ft_memset(data, 0, sizeof(t_command_data));
-	parse_input(filtered_args, count, data, shell);
-	if (data->heredoc_fd == 0)
-		data->heredoc_fd = -1;
-	return (data);
-}
-
-void	execute_command_pipeline(t_command_data *data, t_shell *shell)
-{
-	if (shell->exit_status != 2 && validate_command(data->commands, shell) == 0)
-	{
-		cleanup_command_data(data);
-		return ;
-	}
-	execute_commands(data, shell);
-	cleanup_command_data(data);
+	filter_and_copy_args(filtered_args, expanded_args, parsed);
+	return (filtered_args);
 }

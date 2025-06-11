@@ -3,103 +3,130 @@
 /*                                                        :::      ::::::::   */
 /*   parse_input.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 07:26:00 by pedro             #+#    #+#             */
-/*   Updated: 2025/06/04 11:58:23 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:54:57 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	print_args(char **args)
+static char	*decode_per_char_loop(char *result,
+		const char *t, size_t j, size_t len)
 {
-	int	i;
+	size_t	i;
+	size_t	k;
 
-	if (args == NULL)
-	{
-		return ;
-	}
 	i = 0;
-	while (args[i] != NULL)
+	while (i < len)
 	{
-		i++;
+		if (i + 3 < len && t[i] == 3 && t[i + 1] == 'P' && t[i + 2] == '"')
+		{
+			k = i + 3;
+			while (k < len && t[k] != '"')
+				k++;
+			if (k + 1 < len && t[k] == '"' && t[k + 1] == 'P')
+			{
+				while (i + 3 < k)
+					result[j++] = t[3 + i++];
+				i = k + 2;
+				continue ;
+			}
+		}
+		result[j++] = t[i++];
 	}
+	result[j] = '\0';
+	return (result);
 }
 
-static void	alloc_commands(t_command_data *data, t_shell *shell)
+static char	*decode_per_char_encoding(const char *token)
 {
-	int	i;
+	char	*result;
+	size_t	len;
+	size_t	j;
 
-	data->commands = malloc(data->num_commands * sizeof(char *));
-	data->arguments = malloc(data->num_commands * sizeof(char **));
-	data->input_files = malloc(data->num_commands * sizeof(char *));
-	data->out_redirs = malloc(data->num_commands * sizeof(t_redirection *));
-	data->num_out_redirs = malloc(data->num_commands * sizeof(int));
-	if (data->commands == NULL || data->arguments == NULL
-		|| data->input_files == NULL || data->out_redirs == NULL
-		|| data->num_out_redirs == NULL)
-	{
-		shell->exit_status = 1;
-		free_command_data(data);
-		return ;
-	}
-	ft_memset(data->commands, 0, data->num_commands * sizeof(char *));
-	ft_memset(data->arguments, 0, data->num_commands * sizeof(char **));
-	ft_memset(data->input_files, 0, data->num_commands * sizeof(char *));
-	ft_memset(data->out_redirs, 0,
-		data->num_commands * sizeof(t_redirection *));
-	ft_memset(data->num_out_redirs, 0, data->num_commands * sizeof(int));
-	i = 0;
-	while (i < data->num_commands)
-		data->num_out_redirs[i++] = 0;
+	len = ft_strlen(token);
+	result = malloc(len + 1);
+	if (!result)
+		return (ft_strdup(token));
+	j = 0;
+	return (decode_per_char_loop(result, token, j, len));
 }
 
-void	populate_command(char **args, int *arg_counts,
-	t_command_data *data, t_parse_state *state)
+char	*clean_escaped_token(const char *token)
 {
-	if (state->idx.j == 0)
+	char	*result;
+	char	*temp;
+	size_t	len;
+
+	if (!token)
+		return (NULL);
+	if (ft_strchr(token, 3))
 	{
-		data->commands[state->command_index] = ft_strdup(args[state->idx.i]);
-		data->arguments[state->command_index] = malloc((arg_counts[
-					state->command_index] + 1) * sizeof(char *));
-		if (data->commands[state->command_index] == NULL
-			|| data->arguments[state->command_index] == NULL)
-			return ;
+		return (decode_per_char_encoding(token));
 	}
+	if (token[0] == 3 && token[1] == 'P' && token[2] == '"')
+	{
+		len = ft_strlen(token);
+		if (len > 4 && token[len - 1] == 'P')
+		{
+			temp = ft_strndup(token + 2, len - 4);
+			result = remove_quotes(temp);
+			free(temp);
+			if (!result)
+				result = ft_strdup("");
+			return (result);
+		}
+	}
+	return (ft_strdup(token));
 }
 
-void	populate_argument(char **args, t_command_data *data,
-	t_parse_state *state)
+/// @brief Processes filename tokens by removing operator protection encoding
+/// @param token Input token potentially
+///containing 3P"..."P protection encoding
+/// @return Cleaned filename string with quotes removed, 
+/// or copy of original token
+char	*process_filename_token(const char *token)
 {
-	if (state->idx.j == 0 && args[state->idx.i] && !*args[state->idx.i])
+	char	*result;
+	char	*temp;
+	size_t	len;
+
+	if (token && token[0] == 3 && token[1] == 'P' && token[2] == '"')
 	{
-		while (args[state->idx.i] && !*args[state->idx.i])
-			state->idx.i++;
-		if (!args[state->idx.i])
-			return ;
-		if (data->commands[state->command_index])
-			free(data->commands[state->command_index]);
-		data->commands[state->command_index] = ft_strdup(args[state->idx.i]);
+		len = ft_strlen(token);
+		if (len > 4 && token[len - 1] == 'P')
+		{
+			temp = ft_strndup(token + 2, len - 4);
+			result = remove_quotes(temp);
+			free(temp);
+			if (!result)
+				result = ft_strdup("");
+			return (result);
+		}
 	}
-	data->arguments[state->command_index][state->idx.j]
-		= ft_strdup(args[state->idx.i]);
-	if (data->arguments[state->command_index][state->idx.j] == NULL)
-		return ;
-	state->idx.j++;
-	state->idx.i++;
+	return (ft_strdup(token));
 }
 
+/// @brief Main parsing entry point - converts token array to
+/// command pipeline structure
+/// @param args Array of expanded and filtered argument tokens
+/// @param count Number of tokens in args array
+/// @param data Command data structure to populate
+/// @param shell Global shell state for error handling
 void	parse_input(char **args, int count, t_command_data *data,
 	t_shell *shell)
 {
-	int	*arg_counts;
+	int				*arg_counts;
+	t_count_context	ctx;
 
 	ft_memset(data, 0, sizeof(t_command_data));
 	arg_counts = initialize_arg_counts(count, shell);
 	if (arg_counts == NULL)
 		return ;
-	count_commands(args, count, data, arg_counts);
+	ctx = (t_count_context){args, count, data, arg_counts, shell};
+	count_commands(&ctx);
 	if (data->num_commands == 0)
 	{
 		free_command_data(data);

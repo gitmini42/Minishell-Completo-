@@ -3,15 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   var_expansion.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:47:12 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/04 11:56:11 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:53:45 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/// @brief Calculates size needed for variable expansion during size
+/// calculation phase
+/// @param arg Source string containing variable reference
+/// @param indices Position indices for parsing ($VAR location)
+/// @param shell Global shell state for variable lookup and exit status
+/// @return Size in bytes needed for expanded variable value
 size_t	calc_var_size(const char *arg, t_indices *indices, t_shell *shell)
 {
 	size_t	start;
@@ -54,6 +60,29 @@ size_t	handle_exit_status(char *dest, int fill, size_t *i, t_shell *shell)
 	return (len);
 }
 
+int	var_exists(const char *name, t_var *vars, char **envp)
+{
+	t_var	*var;
+	int		k;
+
+	var = vars;
+	while (var)
+	{
+		if (ft_strcmp(var->name, name) == 0)
+			return (1);
+		var = var->next;
+	}
+	k = 0;
+	while (envp && envp[k])
+	{
+		if (ft_strncmp(envp[k], name, ft_strlen(name)) == 0
+			&& envp[k][ft_strlen(name)] == '=')
+			return (1);
+		k++;
+	}
+	return (0);
+}
+
 char	*get_var_value_helper(const char *name, t_var *vars, char **envp)
 {
 	t_var	*var;
@@ -77,29 +106,12 @@ char	*get_var_value_helper(const char *name, t_var *vars, char **envp)
 	return ("");
 }
 
-size_t	get_var_len(const char *str, size_t i, t_var *vars, char **envp)
-{
-	size_t	var_len;
-	char	*var_name;
-	char	*var_value;
-
-	if (!str)
-		return (0);
-	var_len = 0;
-	while (str[i + 1 + var_len] && (isalnum(str[i + 1 + var_len])
-			|| str[i + 1 + var_len] == '_'))
-		var_len++;
-	if (var_len == 0)
-		return (0);
-	var_name = ft_strndup(&str[i + 1], var_len);
-	if (!var_name)
-		return (0);
-	var_value = get_var_value_helper(var_name, vars, envp);
-	var_len = ft_strlen(var_value);
-	free(var_name);
-	return (var_len);
-}
-
+/// @brief Main variable expansion function with quote-aware processing
+/// @param arg Source string to expand variables in
+/// @param quote_type Quote context: '\0'=none, '"'=double,
+/// '\''=single (no expansion)
+/// @param shell Global shell state for variable lookup
+/// @return Newly allocated string with variables expanded, NULL on failure
 char	*expand_variables(const char *arg, char quote_type, t_shell *shell)
 {
 	size_t	total_size;

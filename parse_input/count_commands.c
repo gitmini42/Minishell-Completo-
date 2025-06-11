@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:57:31 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/07 01:35:15 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:55:12 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,10 @@ static void	validate_final_state(t_command_data *data, t_shell *shell)
 	}
 }
 
-static void	count_commands_internal(t_count_context *ctx)
+/// @brief Analyzes token stream to determine pipeline structure
+/// and command boundaries
+/// @param ctx Context containing args, count, data, arg_counts, and shell
+void	count_commands(t_count_context *ctx)
 {
 	t_indices	idx;
 	int			command_index;
@@ -63,15 +66,4 @@ static void	count_commands_internal(t_count_context *ctx)
 	}
 	ctx->data->num_commands = command_index + 1;
 	validate_final_state(ctx->data, ctx->shell);
-}
-
-void	count_commands(char **args, int count, t_command_data *data,
-	int *arg_counts)
-{
-	t_count_context	ctx;
-	t_shell			*shell;
-
-	shell = get_shell();
-	ctx = (t_count_context){args, count, data, arg_counts, shell};
-	count_commands_internal(&ctx);
 }

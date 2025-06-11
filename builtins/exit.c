@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:05:58 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/03 07:52:45 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:49:11 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,5 +67,6 @@ void	ft_exit(char **args, t_shell *shell)
 		exit_code = shell->exit_status;
 	shell->exit_status = exit_code;
 	finalize_shell(shell);
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(exit_code);
 }

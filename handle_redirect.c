@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:02:00 by pedro             #+#    #+#             */
-/*   Updated: 2025/06/07 01:51:50 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/10 20:45:27 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,40 +36,39 @@ int	validate_redirect_syntax(char **args, t_indices *indices, t_shell *shell)
 	return (0);
 }
 
-int	handle_input_redirect(t_redirect_params *params, t_shell *shell)
+static int	handle_file_open_error(char *filename, t_shell *shell)
 {
-	if (!shell->is_counting)
-	{
-		process_input_file(params, shell);
-		update_input_files(params, shell);
-	}
-	params->indices->i += 2;
-	return (0);
+	ft_putstr_fd("minishell: ", 2);
+	perror(filename);
+	if (shell->exit_status != 2)
+		shell->exit_status = 1;
+	free(filename);
+	return (-1);
 }
 
 int	open_output_file(char **args, t_indices *indices,
 	const char *token, t_shell *shell)
 {
-	int	fd;
-	int	flags;
+	int		fd;
+	int		flags;
+	char	*filename;
 
 	if (shell->exit_status == 0)
 	{
+		filename = process_filename_token(args[indices->i + 1]);
+		if (!filename)
+			return (-1);
 		flags = O_WRONLY | O_CREAT;
 		if (ft_strcmp(token, ">>") == 0)
 			flags |= O_APPEND;
 		else
 			flags |= O_TRUNC;
-		fd = open(args[indices->i + 1], flags, 0666);
+		fd = open(filename, flags, 0666);
 		if (fd < 0)
-		{
-			ft_putstr_fd("minishell: ", 2);
-			perror(args[indices->i + 1]);
-			shell->exit_status = 1;
-			return (-1);
-		}
+			return (handle_file_open_error(filename, shell));
 		else
 			close(fd);
+		free(filename);
 	}
 	return (0);
 }
@@ -99,7 +98,8 @@ int	handle_output_redirect(t_output_params *params, t_shell *shell)
 			params->token, shell);
 		if (add_output_redirection(params) == -1)
 		{
-			shell->exit_status = 1;
+			if (shell->exit_status != 2)
+				shell->exit_status = 1;
 			params->base.indices->i += 2;
 			return (-1);
 		}

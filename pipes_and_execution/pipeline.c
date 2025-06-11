@@ -6,22 +6,27 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:27:01 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/07 01:07:14 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 04:51:45 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/// @brief Sets up input redirection for command (heredoc takes
+/// precedence over file)
+/// @param data Command data with heredoc_fds and input_files arrays
+/// @param i Current command index in pipeline
+/// @param shell Global shell state for error handling
 static void	setup_input_redirect(t_command_data *data, int i, t_shell *shell)
 {
 	int	fd;
 
 	fd = -1;
-	if (data->heredoc_fd != -1)
+	if (data->heredoc_fds && data->heredoc_fds[i] != -1)
 	{
-		dup2(data->heredoc_fd, STDIN_FILENO);
-		close(data->heredoc_fd);
-		data->heredoc_fd = -1;
+		dup2(data->heredoc_fds[i], STDIN_FILENO);
+		close(data->heredoc_fds[i]);
+		data->heredoc_fds[i] = -1;
 	}
 	else if (data->input_files && data->input_files[i] != NULL)
 	{

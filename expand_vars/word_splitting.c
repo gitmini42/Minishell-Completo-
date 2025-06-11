@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/06 01:15:00 by pviegas-          #+#    #+#             */
-/*   Updated: 2025/06/07 01:31:46 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/09 18:23:35 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,53 +109,6 @@ int	should_split_token(char quote_type, const char *expanded_token)
 	while (expanded_token[i])
 	{
 		if (ft_isspace(expanded_token[i]))
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
-static int	has_unquoted_vars(const char *token)
-{
-	int		i;
-	int		in_quotes;
-	char	quote_char;
-
-	i = 0;
-	in_quotes = 0;
-	quote_char = '\0';
-	while (token[i])
-	{
-		if (!in_quotes && (token[i] == '"' || token[i] == '\''))
-		{
-			in_quotes = 1;
-			quote_char = token[i];
-		}
-		else if (in_quotes && token[i] == quote_char)
-		{
-			in_quotes = 0;
-			quote_char = '\0';
-		}
-		else if (!in_quotes && token[i] == '$' && token[i + 1]
-			&& (ft_isalpha(token[i + 1]) || token[i + 1] == '_'))
-			return (1);
-		i++;
-	}
-	return (0);
-}
-
-int	should_split_mixed_quotes(const char *original, const char *expanded)
-{
-	int	i;
-
-	if (!original || !expanded)
-		return (0);
-	if (!has_unquoted_vars(original))
-		return (0);
-	i = 0;
-	while (expanded[i])
-	{
-		if (ft_isspace(expanded[i]))
 			return (1);
 		i++;
 	}
