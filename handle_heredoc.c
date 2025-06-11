@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:19:14 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/10 20:40:48 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 14:39:23 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ void	set_heredoc_delimiter(t_command_data *data, char *delim, int cmd_index)
 	{
 		temp_delim = ft_strdup(delim);
 		processed_delim = remove_quotes(temp_delim);
+		free(temp_delim);
 		if (processed_delim)
 		{
 			data->heredoc_delims[cmd_index] = processed_delim;

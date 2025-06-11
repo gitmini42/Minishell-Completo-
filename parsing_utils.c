@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 14:39:03 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/03 07:53:00 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 17:02:42 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ int	count_args(char **args)
 	return (count);
 }
 
+// state is parse not state struct
 void	add_argument(t_parse *state)
 {
 	int		len;

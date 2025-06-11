@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:08:42 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/10 20:37:38 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 17:01:45 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,8 @@ void	free_args(char **args, t_command_data *data)
 		free(args[i]);
 		i++;
 	}
-	free(args);
+	if (args)
+		free(args);
 	if (data)
 		free_command_data(data);
 }

@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:35:24 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 04:50:15 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 17:14:22 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,5 +72,18 @@ void	process_token(t_parse *state, int *last_was_operator)
 	{
 		add_argument(state);
 		*last_was_operator = 0;
+	}
+}
+
+void	free_state_args(t_parse *state)
+{
+	int	i;
+
+	i = 0;
+	while (state->args[i])
+	{
+		free(state->args[i]);
+		state->args[i] = NULL;
+		i++;
 	}
 }

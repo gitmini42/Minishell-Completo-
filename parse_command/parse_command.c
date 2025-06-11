@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:42:33 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 04:50:49 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:22:42 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,7 @@ static int	check_paren(t_parse *state, t_shell *shell,
 			!state->in_quotes)
 	{
 		print_error_simple("syntax error near token", 2, shell);
-		free(state->args);
-		free(state->quote_types);
+		free_state_args(state);
 		result->args = NULL;
 		result->quote_types = NULL;
 		return (0);
@@ -79,7 +78,7 @@ static void	parse_loop(t_parse *state, t_shell *shell,
 			if (!handle_operator(state, last_was_operator, shell))
 			{
 				*last_was_operator = 0;
-				state->args[0] = NULL;
+				free_state_args(state);
 				result->args = NULL;
 				result->quote_types = NULL;
 				return ;
@@ -111,7 +110,7 @@ static int	check_initial(const char *cmd, t_shell *shell, t_parse *state)
 /// @param cmd Raw command string from user input
 /// @param shell Global shell state for error handling
 /// @return Parse result with tokenized args, quote types, and operator flags
-t_parse_result	parse_command(const char *cmd, t_shell *shell)
+t_parse_result	parse_command(char *cmd, t_shell *shell)
 {
 	t_parse			state;
 	t_parse_result	result;

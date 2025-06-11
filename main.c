@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 12:05:30 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 04:57:50 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 17:22:20 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,8 @@ int	process_input(char *input, t_shell *shell)
 	return (2);
 }
 
-/// @brief Main interactive shell loop handling user input and signal processing
+/// @brief Main interactive shell loop handling
+/// user input and signal processing
 /// @param shell Global shell state for command processing and exit
 /// status tracking
 static void	run_shell_loop(t_shell *shell)
@@ -122,7 +123,8 @@ static void	run_shell_loop(t_shell *shell)
 	}
 }
 
-/// @brief Minishell entry point - initializes shell and starts interactive loop
+/// @brief Minishell entry point - initializes shell
+/// and starts interactive loop
 /// @param argc Argument count (unused)
 /// @param argv Argument values (unused)
 /// @param envp Environment variables array passed to shell
@@ -140,43 +142,3 @@ int	main(int argc, char *argv[], char *envp[])
 	finalize_shell(&shell);
 	return (shell.exit_status);
 }
-
-/* int	main(int argc, char *argv[], char *envp[])
-{
-	t_shell	shell;
-	char	*input;
-	char	*line;
-	int		result;
-
-	(void)argc;
-	(void)argv;
-	init_shell(&shell, envp);
-	rl_catch_signals = 0;
-	set_signals_interactive();
-	while (1)
-	{
-		if (isatty(fileno(stdin)))
-			input = readline("minishell> ");
-		else
-		{
-			line = get_next_line(fileno(stdin));
-			if (!line)
-				input = NULL;
-			else
-			{
-				input = ft_strtrim(line, "\n");
-				free(line);
-			}
-		}
-		g_signal = 0;
-		result = process_input(input, &shell);
-		if (result == 0)
-			break ;
-		if (input && input[0] != '\0' && result == 2)
-			handle_command(input, &shell);
-		if (input)
-			free(input);
-	}
-	finalize_shell(&shell);
-	return (shell.exit_status);
-} */

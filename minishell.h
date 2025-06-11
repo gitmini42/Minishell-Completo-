@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 18:31:59 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 04:59:35 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 17:13:27 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ typedef struct s_shell
 /// @param start Start position of current token being parsed
 typedef struct s_parse
 {
-	const char	*cmd;
+	char		*cmd;
 	char		**args;
 	char		quote_char;
 	char		*quote_types;
@@ -337,7 +337,7 @@ void			print_error_token(const char *token, int exit_code,
 void			print_error_command2(const char *command, const char *file,
 					const char *message);
 
-void			initialize_state(t_parse *state, const char *cmd);
+void			initialize_state(t_parse *state, char *cmd);
 int				check_errors(t_parse *state, t_shell *shell,
 					int last_was_operator);
 void			finalize_result(t_parse *state, t_parse_result *result,
@@ -488,7 +488,7 @@ void			wait_commands(pid_t *pids, t_command_data *data,
 //expand_vars/command_processor.c
 void			expand_and_validate(char **tokens, char *quote_types,
 					t_shell *shell);
-t_parse_result	parse_command(const char *cmd, t_shell *shell);
+t_parse_result	parse_command(char *cmd, t_shell *shell);
 
 char			**expand_tokens(char **tokens, char *quote_types,
 					t_shell *shell);
@@ -531,6 +531,7 @@ void			free_all_vars(t_var **vars);
 void			free_args(char **args, t_command_data *data);
 void			free_command_data(t_command_data *data);
 void			free_state(t_parse *state);
+void			free_state_args(t_parse *state);
 void			free_input_files(t_command_data *data);
 
 #endif

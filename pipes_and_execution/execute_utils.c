@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:58:37 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 04:51:29 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 14:21:26 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 void	cleanup_and_exit(t_command_data *data, pid_t *pids, t_shell *shell,
 		int exit_code)
 {
-	free_command_data(data);
+	cleanup_command_data(data);
 	free(pids);
 	finalize_shell(shell);
 	exit(exit_code);

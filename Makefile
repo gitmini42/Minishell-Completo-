@@ -1,6 +1,6 @@
 NAME = minishell
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -I./includes
+CFLAGS = -g -Wall -Werror -Wextra -I./includes
 LIBS = -Llibft -lft -lreadline
 RM = rm -rf
 OBJDIR = objs

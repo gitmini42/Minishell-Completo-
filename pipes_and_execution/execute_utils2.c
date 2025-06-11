@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:03:27 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 01:53:43 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 16:59:51 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,18 +65,18 @@ void	fork_child(t_command_data *data, t_exec_state *state,
 	if (has_builtin && shell->is_save_to_execute == true)
 	{
 		child_builtin(&state->i, shell, data);
-		free_command_data(data);
+		cleanup_command_data(data);
 		free_args(shell->envp, NULL);
 		free_all_vars(&shell->vars);
+		free(pids);
 		exit(shell->exit_status);
 	}
 	if (!has_builtin)
-	{
 		execute_command(&state->i, shell, pids, data);
-	}
-	free_command_data(data);
+	cleanup_command_data(data);
 	free_args(shell->envp, NULL);
 	free_all_vars(&shell->vars);
+	free(pids);
 	exit(1);
 }
 

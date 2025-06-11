@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:36:00 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 03:50:36 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 16:59:01 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	free_state(t_parse *state)
 {
 	if (state->args)
 	{
-		free(state->args);
+		free_args(state->args, NULL);
 		state->args = NULL;
 	}
 	if (state->quote_types)
@@ -36,7 +36,7 @@ void	free_state(t_parse *state)
 /// @brief Initializes parser state structure with allocated memory
 /// @param state Parser state structure to initialize
 /// @param cmd Command string to parse (used for size estimation)
-void	initialize_state(t_parse *state, const char *cmd)
+void	initialize_state(t_parse *state, char *cmd)
 {
 	size_t	max_tokens;
 
@@ -91,7 +91,7 @@ static int	redir_isnot_command(t_parse *state, t_shell *shell)
 		|| ft_strcmp(state->args[0], "\'>\'") == 0)
 	{
 		shell->exit_status = 127;
-		return (print_error_command("<", "Command not found"));
+		return (print_error_command("<", "Command "));
 	}
 	return (0);
 }
