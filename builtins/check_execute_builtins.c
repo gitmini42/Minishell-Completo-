@@ -87,7 +87,7 @@ int	execute_builtin_command(char *command, char **args, t_shell *shell, int *i)
 	if (ft_strcmp(command, "unset") == 0)
 		return (ft_unset(args, &shell->vars, &shell->envp), 1);
 	if (ft_strcmp(command, "exit") == 0)
-		return (ft_exit(args, shell), 1);
+		return (1);
 	return (0);
 }
 
