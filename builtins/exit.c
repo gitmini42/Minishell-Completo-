@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:05:58 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 17:19:00 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/12 12:04:44 by scarlos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ static int	is_numeric(const char *str)
 	return (1);
 }
 
-static void	print_numeric_error(const char *arg, t_shell *shell, t_command_data *data)
+static void	print_numeric_error(const char *arg, t_shell *shell,
+				t_command_data *data)
 {
 	char	*msg;
 	char	*tmp;
@@ -42,7 +43,7 @@ static void	print_numeric_error(const char *arg, t_shell *shell, t_command_data 
 	free(tmp);
 	ft_putstr_fd(msg, STDERR_FILENO);
 	free(msg);
-	shell->exit_status = 2;	
+	shell->exit_status = 2;
 	free_command_data(data);
 	free(data);
 	finalize_shell(shell);
