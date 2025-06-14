@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:48:34 by pviegas-          #+#    #+#             */
-/*   Updated: 2025/06/10 23:06:15 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/13 23:38:55 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,43 @@ static int	should_skip_execution(t_command_data *data, t_shell *shell)
 	return (0);
 }
 
+/// @brief Prepares command data for execution by handling NULL commands
+/// @param data Command data structure to sanitize
+static void	prepare_command_data_for_execution(t_command_data *data)
+{
+	int	i;
+
+	if (!data)
+		return ;
+	i = 0;
+	while (i < data->num_commands)
+	{
+		if (!data->commands[i] || !data->commands[i][0])
+		{
+			if (data->commands[i])
+			{
+				free(data->commands[i]);
+				data->commands[i] = NULL;
+			}
+			data->commands[i] = ft_strdup("/bin/true");
+			if (!data->arguments[i])
+			{
+				data->arguments[i] = malloc(2 * sizeof(char *));
+				if (data->arguments[i])
+				{
+					data->arguments[i][0] = ft_strdup("/bin/true");
+					data->arguments[i][1] = NULL;
+				}
+			}
+			else if (!data->arguments[i][0])
+			{
+				data->arguments[i][0] = ft_strdup("/bin/true");
+			}
+		}
+		i++;
+	}
+}
+
 void	execute_command_pipeline(t_command_data *data, t_shell *shell)
 {
 	if (has_failed_heredoc(data))
@@ -68,6 +105,7 @@ void	execute_command_pipeline(t_command_data *data, t_shell *shell)
 		cleanup_command_data(data);
 		return ;
 	}
+	prepare_command_data_for_execution(data);
 	execute_commands(data, shell);
 	cleanup_command_data(data);
 }

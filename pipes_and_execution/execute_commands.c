@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 17:49:46 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 01:53:04 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/14 01:58:31 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,12 +127,7 @@ void	execute_commands(t_command_data *data, t_shell *shell)
 		return ;
 	set_signals_simple(1);
 	while (state.i < data->num_commands)
-	{		
-		if (data->commands[state.i] == NULL)
-		{
-			state.i++;
-			continue;
-		}
+	{
 		run_pipeline(data, &state, shell, pids);
 		if (handle_signal_interruption(pids, &state, data, shell))
 			break ;

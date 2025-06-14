@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 18:31:59 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 17:13:27 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/14 02:01:01 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -380,8 +380,8 @@ int				parent_builtin(t_command_data *data, t_exec_state *state,
 // builtins_utils.c
 int				ft_isspace(int c);
 int				check_builtin(char *command);
-int				execute_builtin_command(char *command, char **args,
-					t_shell *shell, int *i);
+int				execute_builtin_command(t_command_data *data,
+					char **args, t_shell *shell, int *i);
 int				handle_input_redirection(t_command_data *data, int *i,
 					int original_stdin, t_shell *shell);
 int				handle_output_redirection(t_command_data *data, int *i,

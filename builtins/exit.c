@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:05:58 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/12 12:04:44 by scarlos-         ###   ########.fr       */
+/*   Updated: 2025/06/14 02:01:43 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,7 @@ static int	is_numeric(const char *str)
 	return (1);
 }
 
-static void	print_numeric_error(const char *arg, t_shell *shell,
-				t_command_data *data)
+static void	print_numeric_error(const char *arg, t_shell *shell, t_command_data *data)
 {
 	char	*msg;
 	char	*tmp;
@@ -44,8 +43,7 @@ static void	print_numeric_error(const char *arg, t_shell *shell,
 	ft_putstr_fd(msg, STDERR_FILENO);
 	free(msg);
 	shell->exit_status = 2;
-	free_command_data(data);
-	free(data);
+	cleanup_command_data(data);
 	finalize_shell(shell);
 	exit(2);
 }
@@ -69,8 +67,7 @@ void	ft_exit(char **args, t_shell *shell, t_command_data *data)
 	else
 		exit_code = shell->exit_status;
 	shell->exit_status = exit_code;
-	free_command_data(data);
-	free(data);
+	cleanup_command_data(data);
 	finalize_shell(shell);
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(exit_code);

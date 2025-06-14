@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:06:42 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 13:39:19 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/14 01:59:55 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,13 +63,13 @@ int	handle_output_redirection(t_command_data *data, int *i,
 	return (0);
 }
 
-int	execute_builtin_command(char *command, char **args, t_shell *shell, int *i)
+int	execute_builtin_command(t_command_data *data, char **args, t_shell *shell, int *i)
 {
 	int	result;
 
-	if (ft_strcmp(command, "echo") == 0)
+	if (ft_strcmp(data->commands[*i], "echo") == 0)
 		return (ft_echo(args, shell), 1);
-	if (ft_strcmp(command, "pwd") == 0)
+	if (ft_strcmp(data->commands[*i], "pwd") == 0)
 	{
 		result = ft_pwd();
 		if (result == 1)
@@ -78,16 +78,16 @@ int	execute_builtin_command(char *command, char **args, t_shell *shell, int *i)
 			shell->exit_status = 1;
 		return (1);
 	}
-	if (ft_strcmp(command, "env") == 0)
+	if (ft_strcmp(data->commands[*i], "env") == 0)
 		return (ft_env(args, shell), 1);
-	if (ft_strcmp(command, "cd") == 0)
+	if (ft_strcmp(data->commands[*i], "cd") == 0)
 		return (ft_cd(args, i, shell), 1);
-	if (ft_strcmp(command, "export") == 0)
+	if (ft_strcmp(data->commands[*i], "export") == 0)
 		return (ft_export(args, shell), 1);
-	if (ft_strcmp(command, "unset") == 0)
+	if (ft_strcmp(data->commands[*i], "unset") == 0)
 		return (ft_unset(args, &shell->vars, &shell->envp), 1);
-	if (ft_strcmp(command, "exit") == 0)
-		return (1);
+	if (ft_strcmp(data->commands[*i], "exit") == 0)
+		return (ft_exit(args, shell, data), 1);
 	return (0);
 }
 
@@ -95,18 +95,16 @@ int	child_builtin(int *i, t_shell *shell, t_command_data *data)
 {
 	int		original_stdin;
 	int		original_stdout;
-	char	*command;
 	char	**args;
 
 	original_stdin = dup(STDIN_FILENO);
 	original_stdout = dup(STDOUT_FILENO);
-	command = data->commands[*i];
 	args = data->arguments[*i];
 	if (handle_input_redirection(data, i, original_stdin, shell))
 		return (1);
 	if (handle_output_redirection(data, i, original_stdout, shell))
 		return (1);
-	execute_builtin_command(command, args, shell, i);
+	execute_builtin_command(data, args, shell, i);
 	restore_fds(original_stdin, original_stdout);
 	return (1);
 }
