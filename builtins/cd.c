@@ -46,11 +46,17 @@ int	ft_cd(char **args, int *i, t_shell *shell)
 		return (handle_cd_too_many_arguments(shell));
 	old_pwd = getcwd(NULL, 0);
 	if (determine_cd_path(args, &path, shell) != 0)
+	{
+		free(old_pwd);
 		return (1);
+	}
 	if (chdir(path) != 0)
 		return (handle_cd_error(shell, old_pwd));
 	if (update_pwd_vars(old_pwd, shell) != 0)
+	{
+		free(old_pwd);
 		return (1);
+	}
 	free(old_pwd);
 	if (i)
 		(*i)++;

@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:05:58 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/14 02:01:43 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/15 03:38:45 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ static int	is_numeric(const char *str)
 	return (1);
 }
 
-static void	print_numeric_error(const char *arg, t_shell *shell, t_command_data *data)
+static void	print_numeric_error(const char *arg,
+		t_shell *shell, t_command_data *data)
 {
 	char	*msg;
 	char	*tmp;

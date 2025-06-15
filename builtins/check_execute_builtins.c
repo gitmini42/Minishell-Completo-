@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:06:42 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/14 01:59:55 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/15 03:38:31 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ int	handle_output_redirection(t_command_data *data, int *i,
 	return (0);
 }
 
-int	execute_builtin_command(t_command_data *data, char **args, t_shell *shell, int *i)
+int	execute_builtin_command(t_command_data *data,
+		char **args, t_shell *shell, int *i)
 {
 	int	result;
 

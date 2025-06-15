@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 18:31:59 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/14 02:01:01 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/15 11:29:08 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,8 @@ typedef struct s_shell
 	int		exit_status;
 	int		is_counting;
 	bool	is_save_to_execute;
+	int		is_safe_to_open;
+	int		valid_flag;
 }	t_shell;
 
 /// @brief Parser state machine for tokenizing command input
@@ -273,6 +275,7 @@ char			**parse_and_expand_command(char *input, t_shell *shell,
 char			**create_filtered_args_improved(char **expanded_args,
 					t_parse_result *parsed);
 void			execute_command_pipeline(t_command_data *data, t_shell *shell);
+void			prepare_command_data_for_execution(t_command_data *data);
 // signal.c
 void			set_signals_interactive(void);
 void			set_signals_simple(int handle_sigquit);

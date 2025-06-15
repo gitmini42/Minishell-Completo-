@@ -40,6 +40,7 @@ SRCS =  ./builtins/check_execute_builtins.c \
 		./pipes_and_execution/pipeline.c \
 		./pipes_and_execution/execute_utils.c \
 		./pipes_and_execution/execute_utils2.c \
+		./pipes_and_execution/prepare_execution.c \
 		./parse_input/parse_input_utils.c ./parse_input/count_commands.c \
 		./parse_input/count_commands_utils.c ./parse_input/parse_input.c \
 		./parse_input/init_commands.c \

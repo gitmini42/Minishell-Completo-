@@ -79,9 +79,16 @@ static int	setup_output_redirect(t_command_data *data, int i, t_shell *shell)
 void	setup_pipes_and_redirections(t_command_data *data, t_exec_state *state,
 		int num_commands, t_shell *shell)
 {
-	if (state->i > 0)
+	int	has_heredoc;
+
+	has_heredoc = (data->heredoc_fds && data->heredoc_fds[state->i] != -1);
+	if (state->i > 0 && !has_heredoc)
 	{
 		dup2(state->prev_pipe_read, STDIN_FILENO);
+		close(state->prev_pipe_read);
+	}
+	else if (state->i > 0 && has_heredoc)
+	{
 		close(state->prev_pipe_read);
 	}
 	setup_input_redirect(data, state->i, shell);

@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:19:57 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/10 20:46:18 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/15 11:40:53 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 
 static int	handle_input_redirect(t_redirect_params *params, t_shell *shell)
 {
+	//int check:
+	
+	//check = 0;
 	if (!shell->is_counting)
 	{
 		process_input_file(params, shell);
@@ -75,7 +78,8 @@ int	process_input_file(t_redirect_params *params, t_shell *shell)
 	int		fd;
 	char	*filename;
 
-	if (shell->exit_status == 0)
+	//printf("%dis safe to open\n", shell->is_safe_to_open);
+	if (shell->exit_status == 0 || shell->is_safe_to_open == 0)
 	{
 		filename = process_filename_token(params->args[params->indices->i + 1]);
 		if (!filename)
@@ -83,9 +87,16 @@ int	process_input_file(t_redirect_params *params, t_shell *shell)
 		fd = open(filename, O_RDONLY);
 		if (fd < 0)
 		{
-			ft_putstr_fd("minishell: ", 2);
-			perror(filename);
+			if (shell->valid_flag == 0)
+			{
+				ft_putstr_fd("mini1shell: ", 2);
+				perror(filename);
+				shell->valid_flag = 1;
+			}
 			shell->exit_status = 1;
+			shell->is_safe_to_open = 1;
+			free(filename);
+			return (1);
 		}
 		else
 			close(fd);
@@ -98,6 +109,8 @@ int	update_input_files(t_redirect_params *params, t_shell *shell)
 {
 	char	*filename;
 
+/* 	if (check == 1)
+		cleanup_command_data */
 	if (params->data->input_files)
 	{
 		free(params->data->input_files[params->cmd_index]);

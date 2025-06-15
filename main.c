@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 12:05:30 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 17:22:20 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/15 11:29:33 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,21 +51,35 @@ void	handle_command(char *input, t_shell *shell)
 	t_parse_result	parsed;
 	t_command_data	*data;
 	char			**filtered_args;
-	int				pre_parse_exit_status;
+	//int				pre_parse_exit_status;
 
+	shell->is_safe_to_open = 0;
 	filtered_args = parse_and_expand_command(input, shell, &parsed);
 	if (!filtered_args)
 		return ;
-	pre_parse_exit_status = shell->exit_status;
+	//pre_parse_exit_status = shell->exit_status;
 	data = prepare_command_data(filtered_args, shell);
 	cleanup_parse_data(&parsed, NULL, filtered_args);
 	if (!data)
 		return ;
-	if (pre_parse_exit_status == 0 && shell->exit_status == 1
+	if (shell->is_safe_to_open == 1 && shell->exit_status == 1
 		&& data->num_pipes == 0)
 	{
 		cleanup_command_data(data);
 		return ;
+	}
+	if (shell->is_safe_to_open == 1 && data->num_pipes > 0)
+	{
+		int i = 0;
+		while (i < data->num_commands)
+		{
+			if (data->commands[i] == NULL)
+			{
+				free(data->input_files[i]);
+				data->input_files[i] = NULL;
+			}
+			i++;
+		}
 	}
 	execute_command_pipeline(data, shell);
 }
@@ -103,6 +117,9 @@ static void	run_shell_loop(t_shell *shell)
 	while (1)
 	{
 		input = readline("minishell> ");
+		shell->valid_flag = 0;
+		shell->is_safe_to_open = 0;
+		//printf("%d is safe to open\n", shell->is_safe_to_open);
 		if (g_signal == SIGINT || g_signal == SIGQUIT)
 		{
 			shell->exit_status = 130;

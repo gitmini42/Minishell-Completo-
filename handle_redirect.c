@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/06 08:02:00 by pedro             #+#    #+#             */
-/*   Updated: 2025/06/10 20:45:27 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/15 11:44:31 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,12 @@ int	validate_redirect_syntax(char **args, t_indices *indices, t_shell *shell)
 
 static int	handle_file_open_error(char *filename, t_shell *shell)
 {
-	ft_putstr_fd("minishell: ", 2);
-	perror(filename);
+	if (shell->valid_flag == 0)
+	{
+		ft_putstr_fd("min2ishell: ", 2);
+		perror(filename);
+		shell->valid_flag = 1;
+	}
 	if (shell->exit_status != 2)
 		shell->exit_status = 1;
 	free(filename);
@@ -53,7 +57,7 @@ int	open_output_file(char **args, t_indices *indices,
 	int		flags;
 	char	*filename;
 
-	if (shell->exit_status == 0)
+	if (shell->exit_status == 0 || shell->is_safe_to_open == 0)
 	{
 		filename = process_filename_token(args[indices->i + 1]);
 		if (!filename)

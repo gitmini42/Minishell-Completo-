@@ -64,6 +64,7 @@ void	fork_child(t_command_data *data, t_exec_state *state,
 		close(state->pipefd[0]);
 	if (has_builtin && shell->is_save_to_execute == true)
 	{
+		signal(SIGPIPE, SIG_IGN);
 		child_builtin(&state->i, shell, data);
 		cleanup_command_data(data);
 		free_args(shell->envp, NULL);
