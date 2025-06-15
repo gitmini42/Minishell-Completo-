@@ -87,6 +87,7 @@ void	ft_env(char **args, t_shell *shell)
 	if (!copy)
 	{
 		perror("malloc");
+		shell->exit_status = EXIT_FAILURE;
 		exit(EXIT_FAILURE);
 	}
 	print_env(copy);

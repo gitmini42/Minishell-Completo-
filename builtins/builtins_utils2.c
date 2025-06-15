@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins_utils2.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
+/*   By: scarlos- <scarlos-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/04 11:29:59 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/15 11:39:04 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/04 11:38:02 by scarlos-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	handle_input_redirection(t_command_data *data, int *i, int original_stdin,
 		fd_in = open(data->input_files[*i], O_RDONLY);
 		if (fd_in == -1)
 		{
-			perror("open inp3ut file");
+			perror("open input file");
 			shell->exit_status = 1;
 			restore_fds(original_stdin, STDOUT_FILENO);
 			return (1);

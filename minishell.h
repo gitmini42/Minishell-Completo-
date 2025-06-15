@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 18:31:59 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/15 11:29:08 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/14 02:01:01 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,7 @@ typedef struct s_command_data
 /// during command counting phase
 /// @param is_save_to_execute Controls builtin execution
 /// context (parent vs child)
+/// @param parsing_error Temporary flag for redirection parsing errors
 typedef struct s_shell
 {
 	char	**envp;
@@ -109,8 +110,7 @@ typedef struct s_shell
 	int		exit_status;
 	int		is_counting;
 	bool	is_save_to_execute;
-	int		is_safe_to_open;
-	int		valid_flag;
+	int		parsing_error;
 }	t_shell;
 
 /// @brief Parser state machine for tokenizing command input
@@ -484,6 +484,8 @@ void			fork_child(t_command_data *data, t_exec_state *state,
 					t_shell *shell, pid_t *pids);
 void			execute_command(int *i, t_shell *shell, pid_t *pids,
 					t_command_data *data);
+void			cleanup_and_exit_child(t_command_data *data, pid_t *pids,
+					t_shell *shell, int exit_code);
 void			handle_wait_status(int status, t_shell *shell);
 void			execute_commands(t_command_data *data, t_shell *shell);
 void			wait_commands(pid_t *pids, t_command_data *data,

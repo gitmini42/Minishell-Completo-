@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 11:42:33 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/15 08:56:43 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/11 18:22:42 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ static void	parse_loop(t_parse *state, t_shell *shell,
 		}
 		process_token(state, last_was_operator);
 	}
-	
 }
 
 static int	check_initial(const char *cmd, t_shell *shell, t_parse *state)

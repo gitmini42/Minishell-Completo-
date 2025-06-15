@@ -26,6 +26,24 @@ void	cleanup_and_exit(t_command_data *data, pid_t *pids, t_shell *shell,
 	exit(exit_code);
 }
 
+/// @brief Child-specific cleanup that doesn't affect parent state (like history)
+/// @param data Command data structure to free
+/// @param pids PID array to free
+/// @param shell Shell state to clean up (environment and variables only)
+/// @param exit_code Exit status for child process
+void	cleanup_and_exit_child(t_command_data *data, pid_t *pids, t_shell *shell,
+		int exit_code)
+{
+	cleanup_command_data(data);
+	if (pids)
+		free(pids);
+	if (shell->envp)
+		free_args(shell->envp, NULL);
+	if (shell->vars)
+		free_all_vars(&shell->vars);
+	exit(exit_code);
+}
+
 /// @brief Manages parent process operations after
 /// fork during pipeline execution
 /// @param pid Child process ID from fork
@@ -93,17 +111,17 @@ void	execute_command(int *i, t_shell *shell, pid_t *pids,
 			print_error_command(data->commands[*i], "Permission denied");
 			g_signal = 126;
 			shell->exit_status = 126;
-			cleanup_and_exit(data, pids, shell, 126);
+			cleanup_and_exit_child(data, pids, shell, 126);
 		}
 		print_error_command(data->commands[*i], "command not found");
 		g_signal = 127;
 		shell->exit_status = 127;
-		cleanup_and_exit(data, pids, shell, 127);
+		cleanup_and_exit_child(data, pids, shell, 127);
 	}
 	execve(full_path, data->arguments[*i], shell->envp);
 	perror("execve");
 	free(full_path);
-	cleanup_and_exit(data, pids, shell, shell->exit_status);
+	cleanup_and_exit_child(data, pids, shell, shell->exit_status);
 }
 
 /// @brief Runs single command in pipeline with fork and pipe management

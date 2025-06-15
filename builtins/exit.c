@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 16:05:58 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/15 03:38:45 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/16 00:57:09 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ static void	print_numeric_error(const char *arg,
 	free(msg);
 	shell->exit_status = 2;
 	cleanup_command_data(data);
-	finalize_shell(shell);
+	free_args(shell->envp, NULL);
+	free_all_vars(&shell->vars);
 	exit(2);
 }
 
@@ -69,7 +70,8 @@ void	ft_exit(char **args, t_shell *shell, t_command_data *data)
 		exit_code = shell->exit_status;
 	shell->exit_status = exit_code;
 	cleanup_command_data(data);
-	finalize_shell(shell);
+	free_args(shell->envp, NULL);
+	free_all_vars(&shell->vars);
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	exit(exit_code);
 }

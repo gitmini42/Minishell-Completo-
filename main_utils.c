@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 12:25:17 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/15 11:29:56 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/14 01:53:12 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,7 @@ void	init_shell(t_shell *shell, char **envp)
 	shell->envp = copy_envp(envp);
 	shell->vars = NULL;
 	shell->exit_status = 0;
-	shell->is_safe_to_open = 0;
-	shell->valid_flag = 0;
+	shell->parsing_error = 0;
 	g_signal = 0;
 	path = get_env_value(shell->envp, "PATH");
 	if (!path)

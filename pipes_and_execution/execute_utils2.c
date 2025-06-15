@@ -58,6 +58,11 @@ void	fork_child(t_command_data *data, t_exec_state *state,
 
 	if (data->commands[state->i] == NULL)
 		exit(0);
+	if (pids)
+	{
+		free(pids);
+		pids = NULL;
+	}
 	has_builtin = check_builtin(data->commands[state->i]);
 	setup_pipes_and_redirections(data, state, data->num_commands, shell);
 	if (state->i < data->num_commands - 1)
@@ -69,15 +74,13 @@ void	fork_child(t_command_data *data, t_exec_state *state,
 		cleanup_command_data(data);
 		free_args(shell->envp, NULL);
 		free_all_vars(&shell->vars);
-		free(pids);
 		exit(shell->exit_status);
 	}
 	if (!has_builtin)
-		execute_command(&state->i, shell, pids, data);
+		execute_command(&state->i, shell, NULL, data);
 	cleanup_command_data(data);
 	free_args(shell->envp, NULL);
 	free_all_vars(&shell->vars);
-	free(pids);
 	exit(1);
 }
 

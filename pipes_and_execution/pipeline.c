@@ -34,6 +34,9 @@ static void	setup_input_redirect(t_command_data *data, int i, t_shell *shell)
 		if (fd < 0)
 		{
 			shell->exit_status = 1;
+			cleanup_command_data(data);
+			free_args(shell->envp, NULL);
+			free_all_vars(&shell->vars);
 			exit(1);
 		}
 		dup2(fd, STDIN_FILENO);
@@ -97,7 +100,12 @@ void	setup_pipes_and_redirections(t_command_data *data, t_exec_state *state,
 		dup2(state->pipefd[1], STDOUT_FILENO);
 	}
 	if (setup_output_redirect(data, state->i, shell) < 0)
+	{
+		cleanup_command_data(data);
+		free_args(shell->envp, NULL);
+		free_all_vars(&shell->vars);
 		exit(shell->exit_status);
+	}
 }
 
 int	setup_pipeline(t_command_data *data, t_exec_state *state, t_shell *shell)
