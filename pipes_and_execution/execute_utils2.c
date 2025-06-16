@@ -6,11 +6,29 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 15:03:27 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 16:59:51 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/16 01:44:10 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+/// @brief Child-specific cleanup that doesn't affect parent state(like history)
+/// @param data Command data structure to free
+/// @param pids PID array to free
+/// @param shell Shell state to clean up (environment and variables only)
+/// @param exit_code Exit status for child process
+void	cleanup_and_exit_child(t_command_data *data, pid_t *pids,
+		t_shell *shell, int exit_code)
+{
+	cleanup_command_data(data);
+	if (pids)
+		free(pids);
+	if (shell->envp)
+		free_args(shell->envp, NULL);
+	if (shell->vars)
+		free_all_vars(&shell->vars);
+	exit(exit_code);
+}
 
 void	handle_wait_status(int status, t_shell *shell)
 {
@@ -71,10 +89,7 @@ void	fork_child(t_command_data *data, t_exec_state *state,
 	{
 		signal(SIGPIPE, SIG_IGN);
 		child_builtin(&state->i, shell, data);
-		cleanup_command_data(data);
-		free_args(shell->envp, NULL);
-		free_all_vars(&shell->vars);
-		exit(shell->exit_status);
+		cleanup_and_exit_child(data, NULL, shell, shell->exit_status);
 	}
 	if (!has_builtin)
 		execute_command(&state->i, shell, NULL, data);

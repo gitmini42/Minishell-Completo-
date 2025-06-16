@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 14:58:37 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/11 14:21:26 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/16 01:36:20 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,24 +23,6 @@ void	cleanup_and_exit(t_command_data *data, pid_t *pids, t_shell *shell,
 	cleanup_command_data(data);
 	free(pids);
 	finalize_shell(shell);
-	exit(exit_code);
-}
-
-/// @brief Child-specific cleanup that doesn't affect parent state (like history)
-/// @param data Command data structure to free
-/// @param pids PID array to free
-/// @param shell Shell state to clean up (environment and variables only)
-/// @param exit_code Exit status for child process
-void	cleanup_and_exit_child(t_command_data *data, pid_t *pids, t_shell *shell,
-		int exit_code)
-{
-	cleanup_command_data(data);
-	if (pids)
-		free(pids);
-	if (shell->envp)
-		free_args(shell->envp, NULL);
-	if (shell->vars)
-		free_all_vars(&shell->vars);
 	exit(exit_code);
 }
 

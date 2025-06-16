@@ -6,7 +6,7 @@
 /*   By: pviegas- <pviegas-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/03 12:05:30 by scarlos-          #+#    #+#             */
-/*   Updated: 2025/06/16 00:57:26 by pviegas-         ###   ########.fr       */
+/*   Updated: 2025/06/16 01:44:33 by pviegas-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ void	handle_command(char *input, t_shell *shell)
 	int				pre_parse_exit_status;
 
 	shell->parsing_error = 0;
-
 	filtered_args = parse_and_expand_command(input, shell, &parsed);
 	if (!filtered_args)
 		return ;
